@@ -1,46 +1,115 @@
 <?xml version="1.0"?>
-<!DOCTYPE module PUBLIC
-        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
-        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
-    <property name="charset" value="UTF-8"/>
-    <property name="severity" value="error"/>
-    <property name="fileExtensions" value="java, properties, xml"/>
+    <!-- Only one space allowed before '{' -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\S\s{2,}\{"/>
+        <property name="message" value="Only one space allowed before '{'"/>
+    </module>
+
+    <!-- No space directly after '{' -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\{\s{2,}"/>
+        <property name="message" value="Only one space allowed after '{'"/>
+    </module>
+
+    <property name="charset" value="UTF-8" />
+    <property name="severity" value="warning" />
+    <property name="fileExtensions" value="java" />
+
+    <!-- Checks for whitespace -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true" />
+    </module>
+
+    <!-- Line Length must be outside TreeWalker -->
+    <module name="LineLength">
+        <property name="max" value="120" />
+        <property name="fileExtensions" value="java" />
+    </module>
 
     <module name="TreeWalker">
-        <!-- Проверка имен -->
-        <module name="ConstantName"/>
-        <module name="LocalFinalVariableName"/>
-        <module name="LocalVariableName"/>
-        <module name="MemberName"/>
-        <module name="MethodName"/>
-        <module name="PackageName"/>
-        <module name="ParameterName"/>
-        <module name="StaticVariableName"/>
-        <module name="TypeName"/>
+        <!-- Naming Conventions -->
+        <module name="ConstantName" />
+        <module name="LocalFinalVariableName" />
+        <module name="LocalVariableName" />
+        <module name="MemberName" />
+        <module name="MethodName" />
+        <module name="PackageName" />
+        <module name="ParameterName" />
+        <module name="StaticVariableName" />
+        <module name="TypeName" />
 
-        <!-- Проверка длины строки -->
-        <module name="LineLength">
-            <property name="max" value="120"/>
+        <!-- Imports -->
+        <module name="AvoidStarImport" />
+        <module name="IllegalImport" />
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+
+        <!-- Size Violations -->
+        <module name="MethodLength">
+            <property name="max" value="150" />
+        </module>
+        <module name="ParameterNumber">
+            <property name="max" value="7" />
         </module>
 
-        <!-- Отступы -->
-        <module name="Indentation">
-            <property name="basicOffset" value="4"/>
-            <property name="braceAdjustment" value="0"/>
-            <property name="caseIndent" value="4"/>
-            <property name="throwsIndent" value="8"/>
-            <property name="lineWrappingIndentation" value="8"/>
-            <property name="arrayInitIndent" value="4"/>
+        <!-- Whitespace -->
+        <module name="EmptyForIteratorPad" />
+        <module name="GenericWhitespace" />
+        <module name="MethodParamPad" />
+        <module name="NoWhitespaceAfter" />
+        <module name="NoWhitespaceBefore" />
+        <module name="OperatorWrap" />
+        <module name="ParenPad" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
+
+        <!-- Modifier Checks -->
+        <module name="ModifierOrder" />
+        <module name="RedundantModifier" />
+
+        <!-- Blocks -->
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="LeftCurly" />
+        <module name="NeedBraces" />
+        <module name="RightCurly" />
+
+        <!-- Coding -->
+        <module name="EmptyStatement" />
+        <module name="EqualsHashCode" />
+        <module name="IllegalInstantiation" />
+        <module name="InnerAssignment" />
+        <module name="MissingSwitchDefault" />
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+
+        <!-- Class Design -->
+        <module name="FinalClass" />
+        <module name="HideUtilityClassConstructor" />
+        <module name="InterfaceIsType" />
+        <module name="VisibilityModifier">
+            <property name="protectedAllowed" value="true" />
+            <property name="packageAllowed" value="true" />
+            <!-- Allow Lombok annotations -->
+            <property name="ignoreAnnotationCanonicalNames"
+                      value="org.springframework.beans.factory.annotation.Autowired,
+                org.springframework.beans.factory.annotation.Value,
+                lombok.Data,
+                lombok.Getter,
+                lombok.Setter,
+                lombok.RequiredArgsConstructor,
+                lombok.AllArgsConstructor,
+                lombok.NoArgsConstructor" />
         </module>
 
-        <!-- Пробелы -->
-        <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
-
-        <!-- Импорты -->
-        <module name="RedundantImport"/>
-        <module name="UnusedImports"/>
+        <!-- Miscellaneous -->
+        <module name="ArrayTypeStyle" />
+        <module name="UpperEll" />
+        <!-- Annotations -->
+        <module name="AnnotationLocation" />
     </module>
 </module>
