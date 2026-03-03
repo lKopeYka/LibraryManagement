@@ -18,16 +18,4 @@ public class BookMapper {
         dto.setYear(book.getYear());
         return dto;
     }
-    //dto to entity
-    public Book toEntity(BookDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        Book book = new Book();
-        book.setId(dto.getId());
-        book.setTitle(dto.getTitle());
-        book.setAuthor(dto.getAuthor());
-        book.setYear(dto.getYear());
-        return book;
-    }
 }

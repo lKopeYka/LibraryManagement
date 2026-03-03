@@ -32,20 +32,13 @@ public class BookRepository {
         return book;
     }
 
-    public void deleteById(Long id) {
-        books.remove(id);
-    }
-
     // Инициализация тестовыми данными
-    {
-        Book book1 = new Book(null, "Война и мир", "Лев Толстой", 1869, "978-5-17-135127-6");
+    {   Book book1 = new Book(null, "Война и мир", "Лев Толстой", 1869, "978-5-17-135127-6");
         Book book2 = new Book(null, "Преступление и наказание", "Федор Достоевский", 1866, "978-5-04-116618-6");
         Book book3 = new Book(null, "Анна Каренина", "Лев Толстой", 1877, "978-5-699-19112-0");
-        Book book4 = new Book(null, "Мастер и Маргарита", "Михаил Булгаков", 1967, "978-5-389-12345-6");
 
         save(book1);
         save(book2);
         save(book3);
-        save(book4);
     }
 }
