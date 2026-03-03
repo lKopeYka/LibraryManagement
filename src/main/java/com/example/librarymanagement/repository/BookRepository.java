@@ -24,12 +24,11 @@ public class BookRepository {
         return Optional.ofNullable(books.get(id));
     }
 
-    public Book save(Book book) {
+    public void save(Book book) {
         if (book.getId() == null) {
             book.setId(idGenerator.getAndIncrement());
         }
         books.put(book.getId(), book);
-        return book;
     }
 
     // Инициализация тестовыми данными
