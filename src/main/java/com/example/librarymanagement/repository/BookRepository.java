@@ -1,6 +1,7 @@
 package com.example.librarymanagement.repository;
 
 import com.example.librarymanagement.model.Book;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ public class BookRepository {
     }
 
     // Инициализация тестовыми данными
-    {
+    @PostConstruct
+    public void init() {
         Book book1 = new Book(null, "Война и мир", "Лев Толстой", 1869, "978-5-17-135127-6");
         Book book2 = new Book(null, "Преступление и наказание", "Федор Достоевский", 1866, "978-5-04-116618-6");
         Book book3 = new Book(null, "Анна Каренина", "Лев Толстой", 1877, "978-5-699-19112-0");
