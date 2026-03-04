@@ -87,7 +87,7 @@ public class AuthorService {
         // Сначала сохраняем автора
         Author author = authorMapper.toEntity(dto.getAuthor());
         Author savedAuthor = authorRepository.save(author);
-        log.info("Автор сохранен: {}", savedAuthor.getId());
+        //log.info("Автор сохранен: {}", savedAuthor.getId());
 
         // Потом сохраняем каждую книгу
         for (BookDto bookDto : dto.getBooks()) {
@@ -95,7 +95,7 @@ public class AuthorService {
             bookDto.setAuthorId(savedAuthor.getId());
             Book book = bookMapper.toEntity(bookDto);
             bookRepository.save(book);
-            log.info("Книга сохранена: {}", book.getTitle());
+            //log.info("Книга сохранена: {}", book.getTitle());
 
             // Искусственно создаем ошибку на книге, в названии которой есть "Ошибка"
             if (book.getTitle().contains("Ошибка")) {
