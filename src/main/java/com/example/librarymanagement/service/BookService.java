@@ -2,7 +2,6 @@ package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
-import com.example.librarymanagement.entity.Author;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
