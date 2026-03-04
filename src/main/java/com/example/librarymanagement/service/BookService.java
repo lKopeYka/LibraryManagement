@@ -46,7 +46,7 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Read by id
@@ -95,21 +95,21 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Поиск по ID автора
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Поиск по категории
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
     // Метод для демонстрации проблемы N+1
     public List<BookDto> getAllBooksWithAuthorNPlusOne() {
@@ -127,7 +127,7 @@ public class BookService {
 
         return books.stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
     public List<BookDto> getAllBooksWithAuthorAndCategoriesOptimized() {
         // Один запрос с JOIN, загружающий всё сразу
@@ -135,6 +135,6 @@ public class BookService {
 
         return books.stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
