@@ -110,7 +110,7 @@ public class AuthorService {
         // Сначала сохраняем автора
         Author author = authorMapper.toEntity(dto.getAuthor());
         Author savedAuthor = authorRepository.save(author);
-        log.info("Автор сохранен: {}", savedAuthor.getId());
+        //log.info("Автор сохранен: {}", savedAuthor.getId());
 
         // Потом сохраняем каждую книгу
         for (BookDto bookDto : dto.getBooks()) {
