@@ -46,7 +46,7 @@ public class AuthorService {
     public List<AuthorDto> getAllAuthors() {
         return authorRepository.findAll().stream()
                 .map(authorMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // READ BY ID - получить автора по ID

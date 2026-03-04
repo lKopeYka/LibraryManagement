@@ -18,9 +18,6 @@ public class BookMapper {
     @Autowired
     private AuthorRepository authorRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     public BookDto toDto(Book book) {
         if (book == null) {
             return null;
