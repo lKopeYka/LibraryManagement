@@ -118,7 +118,7 @@ public class AuthorService {
             bookDto.setAuthorId(savedAuthor.getId());
             Book book = bookMapper.toEntity(bookDto);
             bookRepository.save(book);
-            log.info("Книга сохранена: {}", book.getTitle());
+            log.info("Книга сохранена с ID: {}", book.getId());
 
             // Искусственно создаем ошибку на книге, в названии которой есть "Ошибка"
             if (book.getTitle().contains("Ошибка")) {
