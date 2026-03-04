@@ -3,12 +3,9 @@ package com.example.librarymanagement.controller;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,28 +21,67 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDto>> getBooks(
-            @RequestParam(value = "author", required = false) String author) {
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
 
-        List<BookDto> books;
-
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDto>> getBooksByAuthor(@RequestParam(required = false) String author) {
         if (author != null && !author.isEmpty()) {
-            books = bookService.getBooksByAuthor(author);
-        } else {
-            books = bookService.getAllBooks();
+            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
         }
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
 
-        return ResponseEntity.ok(books);
+    @GetMapping("/by-author/{authorId}")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorId(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookService.getBooksByAuthorId(authorId));
+    }
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<List<BookDto>> getBooksByCategoryId(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(bookService.getBooksByCategoryId(categoryId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
         BookDto book = bookService.getBookById(id);
-
         if (book == null) {
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(book);
+    }
+
+    @PostMapping
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+        BookDto createdBook = bookService.createBook(bookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
+        BookDto updatedBook = bookService.updateBook(id, bookDto);
+        if (updatedBook == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        boolean deleted = bookService.deleteBook(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @GetMapping("/nplus1-demo")
+    public ResponseEntity<List<BookDto>> demonstrateNPlusOne() {
+        // Включаем логирование SQL, чтобы увидеть проблему
+        return ResponseEntity.ok(bookService.getAllBooksWithAuthorNPlusOne());
+    }
+    @GetMapping("/optimized")
+    public ResponseEntity<List<BookDto>> getAllBooksOptimized() {
+        return ResponseEntity.ok(bookService.getAllBooksWithAuthorAndCategoriesOptimized());
     }
 }
