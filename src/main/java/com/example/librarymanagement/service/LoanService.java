@@ -1,0 +1,102 @@
+package com.example.librarymanagement.service;
+
+import com.example.librarymanagement.dto.LoanDto;
+import com.example.librarymanagement.entity.Book;
+import com.example.librarymanagement.entity.Loan;
+import com.example.librarymanagement.entity.Reader;
+import com.example.librarymanagement.mapper.LoanMapper;
+import com.example.librarymanagement.repository.BookRepository;
+import com.example.librarymanagement.repository.LoanRepository;
+import com.example.librarymanagement.repository.ReaderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class LoanService {
+
+    private final LoanRepository loanRepository;
+    private final BookRepository bookRepository;
+    private final ReaderRepository readerRepository;
+    private final LoanMapper loanMapper;
+
+    @Autowired
+    public LoanService(LoanRepository loanRepository,
+                       BookRepository bookRepository,
+                       ReaderRepository readerRepository,
+                       LoanMapper loanMapper) {
+        this.loanRepository = loanRepository;
+        this.bookRepository = bookRepository;
+        this.readerRepository = readerRepository;
+        this.loanMapper = loanMapper;
+    }
+
+    public List<LoanDto> getAllLoans() {
+        return loanRepository.findAll().stream()
+                .map(loanMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public LoanDto getLoanById(Long id) {
+        return loanRepository.findById(id)
+                .map(loanMapper::toDto)
+                .orElse(null);
+    }
+
+    public List<LoanDto> getLoansByReaderId(Long readerId) {
+        return loanRepository.findByReaderId(readerId).stream()
+                .map(loanMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<LoanDto> getLoansByBookId(Long bookId) {
+        return loanRepository.findByBookId(bookId).stream()
+                .map(loanMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<LoanDto> getActiveLoans() {
+        return loanRepository.findByReturnedFalse().stream()
+                .map(loanMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public LoanDto createLoan(LoanDto loanDto) {
+        Book book = bookRepository.findById(loanDto.getBookId())
+                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+
+        Reader reader = readerRepository.findById(loanDto.getReaderId())
+                .orElseThrow(() -> new RuntimeException("Читатель не найден"));
+
+        Loan loan = loanMapper.toEntity(loanDto);
+        loan.setBook(book);
+        loan.setReader(reader);
+
+        Loan savedLoan = loanRepository.save(loan);
+        return loanMapper.toDto(savedLoan);
+    }
+
+    @Transactional
+    public LoanDto returnBook(Long id) {
+        return loanRepository.findById(id)
+                .map(loan -> {
+                    loan.setReturned(true);
+                    loan.setReturnDate(java.time.LocalDate.now());
+                    Loan updatedLoan = loanRepository.save(loan);
+                    return loanMapper.toDto(updatedLoan);
+                })
+                .orElse(null);
+    }
+
+    public boolean deleteLoan(Long id) {
+        if (loanRepository.existsById(id)) {
+            loanRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}
