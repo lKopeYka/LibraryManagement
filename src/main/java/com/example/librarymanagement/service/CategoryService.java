@@ -26,7 +26,7 @@ public class CategoryService {
     public List<CategoryDto> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(categoryMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CategoryDto getCategoryById(Long id) {

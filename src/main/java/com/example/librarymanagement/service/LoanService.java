@@ -37,7 +37,7 @@ public class LoanService {
     public List<LoanDto> getAllLoans() {
         return loanRepository.findAll().stream()
                 .map(loanMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public LoanDto getLoanById(Long id) {
@@ -49,19 +49,19 @@ public class LoanService {
     public List<LoanDto> getLoansByReaderId(Long readerId) {
         return loanRepository.findByReaderId(readerId).stream()
                 .map(loanMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<LoanDto> getLoansByBookId(Long bookId) {
         return loanRepository.findByBookId(bookId).stream()
                 .map(loanMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<LoanDto> getActiveLoans() {
         return loanRepository.findByReturnedFalse().stream()
                 .map(loanMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

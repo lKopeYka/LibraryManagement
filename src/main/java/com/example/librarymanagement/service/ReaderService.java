@@ -25,7 +25,7 @@ public class ReaderService {
     public List<ReaderDto> getAllReaders() {
         return readerRepository.findAll().stream()
                 .map(readerMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ReaderDto getReaderById(Long id) {
