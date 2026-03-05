@@ -8,10 +8,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import jakarta.persistence.FetchType;
 
 import java.time.LocalDate;
 
@@ -41,5 +41,10 @@ public class Loan {
     private LocalDate dueDate;
 
     @Column(name = "return_date")
-    private LocalDate returnDate;
+    private LocalDate returnDate;  // null = не возвращена, не null = возвращена
+
+    // Метод для проверки статуса (удобно использовать в коде)
+    public boolean isReturned() {
+        return returnDate != null;
+    }
 }

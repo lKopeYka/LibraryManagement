@@ -18,5 +18,8 @@ public class LoanDto {
     private LocalDate loanDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
-    private boolean returned;
+
+    public boolean isReturned() {
+        return returnDate != null;
+    }
 }
