@@ -21,9 +21,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByCategoriesId(Long categoryId);
 
     // Переопределяем findAll() с @EntityGraph для загрузки автора и категорий одним запросом
-    //@EntityGraph(attributePaths = {"authorEntity", "categories"})
-    //@Override
-    //List<Book> findAll();
+    @EntityGraph(attributePaths = {"authorEntity", "categories"})
+    @Override
+    List<Book> findAll();
 
     // Поиск книги по ID с загрузкой автора и категорий
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
