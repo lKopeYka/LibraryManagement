@@ -27,25 +27,21 @@ public class LoanController {
         this.loanService = loanService;
     }
 
-    // Все выдачи
     @GetMapping
     public ResponseEntity<List<LoanDto>> getAllLoans() {
         return ResponseEntity.ok(loanService.getAllLoans());
     }
 
-    // Активные выдачи (книги на руках)
     @GetMapping("/active")
     public ResponseEntity<List<LoanDto>> getActiveLoans() {
         return ResponseEntity.ok(loanService.getActiveLoans());
     }
 
-    // Завершённые выдачи
     @GetMapping("/completed")
     public ResponseEntity<List<LoanDto>> getCompletedLoans() {
         return ResponseEntity.ok(loanService.getCompletedLoans());
     }
 
-    // Выдача по ID
     @GetMapping("/{id}")
     public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {
         LoanDto loan = loanService.getLoanById(id);
@@ -55,19 +51,16 @@ public class LoanController {
         return ResponseEntity.ok(loan);
     }
 
-    // Выдачи читателя
     @GetMapping("/reader/{readerId}")
     public ResponseEntity<List<LoanDto>> getLoansByReaderId(@PathVariable Long readerId) {
         return ResponseEntity.ok(loanService.getLoansByReaderId(readerId));
     }
 
-    // Выдачи книги
     @GetMapping("/book/{bookId}")
     public ResponseEntity<List<LoanDto>> getLoansByBookId(@PathVariable Long bookId) {
         return ResponseEntity.ok(loanService.getLoansByBookId(bookId));
     }
 
-    // Создать выдачу
     @PostMapping
     public ResponseEntity<LoanDto> createLoan(@RequestBody LoanDto loanDto) {
         try {
@@ -78,7 +71,6 @@ public class LoanController {
         }
     }
 
-    // Вернуть книгу
     @PutMapping("/{id}/return")
     public ResponseEntity<LoanDto> returnBook(@PathVariable Long id) {
         LoanDto updatedLoan = loanService.returnBook(id);
@@ -88,7 +80,6 @@ public class LoanController {
         return ResponseEntity.ok(updatedLoan);
     }
 
-    // Обновить выдачу
     @PutMapping("/{id}")
     public ResponseEntity<LoanDto> updateLoan(@PathVariable Long id, @RequestBody LoanDto loanDto) {
         LoanDto updatedLoan = loanService.updateLoan(id, loanDto);
@@ -98,7 +89,6 @@ public class LoanController {
         return ResponseEntity.ok(updatedLoan);
     }
 
-    // Удалить выдачу
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLoan(@PathVariable Long id) {
         boolean deleted = loanService.deleteLoan(id);

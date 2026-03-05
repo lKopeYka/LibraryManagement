@@ -41,9 +41,8 @@ public class Loan {
     private LocalDate dueDate;
 
     @Column(name = "return_date")
-    private LocalDate returnDate;  // null = не возвращена, не null = возвращена
+    private LocalDate returnDate;
 
-    // Метод для проверки статуса (удобно использовать в коде)
     public boolean isReturned() {
         return returnDate != null;
     }

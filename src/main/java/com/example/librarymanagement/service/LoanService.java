@@ -35,49 +35,42 @@ public class LoanService {
         this.loanMapper = loanMapper;
     }
 
-    // Получить все выдачи
     public List<LoanDto> getAllLoans() {
         return loanRepository.findAll().stream()
                 .map(loanMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    // Получить выдачу по ID
     public LoanDto getLoanById(Long id) {
         return loanRepository.findById(id)
                 .map(loanMapper::toDto)
                 .orElse(null);
     }
 
-    // Получить выдачи читателя
     public List<LoanDto> getLoansByReaderId(Long readerId) {
         return loanRepository.findByReaderId(readerId).stream()
                 .map(loanMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    // Получить выдачи книги
     public List<LoanDto> getLoansByBookId(Long bookId) {
         return loanRepository.findByBookId(bookId).stream()
                 .map(loanMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    // Получить активные выдачи (книги на руках)
     public List<LoanDto> getActiveLoans() {
         return loanRepository.findByReturnDateIsNull().stream()
                 .map(loanMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    // Получить завершённые выдачи
     public List<LoanDto> getCompletedLoans() {
         return loanRepository.findByReturnDateIsNotNull().stream()
                 .map(loanMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    // Создать новую выдачу
     @Transactional
     public LoanDto createLoan(LoanDto loanDto) {
         Book book = bookRepository.findById(loanDto.getBookId())
@@ -90,12 +83,10 @@ public class LoanService {
         loan.setBook(book);
         loan.setReader(reader);
 
-        // Если дата выдачи не указана, ставим сегодня
         if (loan.getLoanDate() == null) {
             loan.setLoanDate(LocalDate.now());
         }
 
-        // Если дата возврата не указана, ставим через 14 дней
         if (loan.getDueDate() == null) {
             loan.setDueDate(LocalDate.now().plusDays(14));
         }
@@ -104,7 +95,6 @@ public class LoanService {
         return loanMapper.toDto(savedLoan);
     }
 
-    // Отметить книгу как возвращённую
     @Transactional
     public LoanDto returnBook(Long id) {
         return loanRepository.findById(id)
@@ -116,7 +106,6 @@ public class LoanService {
                 .orElse(null);
     }
 
-    // Обновить выдачу
     @Transactional
     public LoanDto updateLoan(Long id, LoanDto loanDto) {
         return loanRepository.findById(id)
@@ -148,7 +137,6 @@ public class LoanService {
                 .orElse(null);
     }
 
-    // Удалить выдачу
     public boolean deleteLoan(Long id) {
         if (loanRepository.existsById(id)) {
             loanRepository.deleteById(id);

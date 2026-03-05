@@ -59,7 +59,6 @@ public class Book {
     )
     private List<Category> categories = new ArrayList<>();
 
-    // Связь с выдачами (одна книга может быть выдана много раз)
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<Loan> loans = new ArrayList<>();
 }

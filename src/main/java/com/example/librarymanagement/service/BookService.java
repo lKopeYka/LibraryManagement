@@ -35,28 +35,24 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
-    // CREATE - создать книгу
     public BookDto createBook(BookDto bookDto) {
         Book book = bookMapper.toEntity(bookDto);
         Book savedBook = bookRepository.save(book);
         return bookMapper.toDto(savedBook);
     }
 
-    // READ ALL - получить все книги (теперь с @EntityGraph!)
     public List<BookDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
-    // READ BY ID - получить книгу по ID
     public BookDto getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(bookMapper::toDto)
                 .orElse(null);
     }
 
-    // UPDATE - обновить книгу
     public BookDto updateBook(Long id, BookDto bookDto) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
@@ -82,7 +78,6 @@ public class BookService {
                 .orElse(null);
     }
 
-    // DELETE - удалить книгу
     public boolean deleteBook(Long id) {
         if (bookRepository.existsById(id)) {
             bookRepository.deleteById(id);
@@ -91,21 +86,18 @@ public class BookService {
         return false;
     }
 
-    // ПОИСК ПО АВТОРУ (строка)
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
-    // ПОИСК ПО ID АВТОРА
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
-    // ПОИСК ПО КАТЕГОРИИ
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)

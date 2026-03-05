@@ -41,7 +41,6 @@ public class Author {
     @Column(length = 1000)
     private String biography;
 
-    // Связь с книгами (один автор может написать много книг)
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Book> books = new ArrayList<>();
 }
