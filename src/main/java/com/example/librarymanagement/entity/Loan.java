@@ -42,7 +42,4 @@ public class Loan {
 
     @Column(name = "return_date")
     private LocalDate returnDate;
-
-    @Column(name = "returned")
-    private boolean returned = false;
 }

@@ -32,11 +32,6 @@ public class LoanController {
         return ResponseEntity.ok(loanService.getAllLoans());
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<List<LoanDto>> getActiveLoans() {
-        return ResponseEntity.ok(loanService.getActiveLoans());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {
         LoanDto loan = loanService.getLoanById(id);

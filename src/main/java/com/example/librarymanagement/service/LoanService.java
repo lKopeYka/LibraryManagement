@@ -58,12 +58,6 @@ public class LoanService {
                 .toList();
     }
 
-    public List<LoanDto> getActiveLoans() {
-        return loanRepository.findByReturnedFalse().stream()
-                .map(loanMapper::toDto)
-                .toList();
-    }
-
     @Transactional
     public LoanDto createLoan(LoanDto loanDto) {
         Book book = bookRepository.findById(loanDto.getBookId())
@@ -84,7 +78,6 @@ public class LoanService {
     public LoanDto returnBook(Long id) {
         return loanRepository.findById(id)
                 .map(loan -> {
-                    loan.setReturned(true);
                     loan.setReturnDate(java.time.LocalDate.now());
                     Loan updatedLoan = loanRepository.save(loan);
                     return loanMapper.toDto(updatedLoan);
