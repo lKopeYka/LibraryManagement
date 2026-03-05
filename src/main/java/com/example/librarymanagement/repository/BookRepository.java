@@ -2,23 +2,30 @@ package com.example.librarymanagement.repository;
 
 import com.example.librarymanagement.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Query;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-    List<Book> findByAuthor(String author);
-    List<Book> findByAuthorEntityId(Long authorId);
-    List<Book> findByCategoriesId(Long categoryId);
-    @EntityGraph(attributePaths = {"authorEntity", "categories"})
-    @Query("SELECT b FROM Book b")
-    List<Book> findAllWithAuthorAndCategories();
 
-    // Решение 2: для конкретной книги
+    // Поиск по автору (строковое поле)
+    List<Book> findByAuthor(String author);
+
+    // Поиск по ID автора
+    List<Book> findByAuthorEntityId(Long authorId);
+
+    // Поиск по ID категории
+    List<Book> findByCategoriesId(Long categoryId);
+
+    // Переопределяем findAll() с @EntityGraph для загрузки автора и категорий одним запросом
+    //@EntityGraph(attributePaths = {"authorEntity", "categories"})
+    //@Override
+    //List<Book> findAll();
+
+    // Поиск книги по ID с загрузкой автора и категорий
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
     Optional<Book> findWithAuthorAndCategoriesById(Long id);
 }

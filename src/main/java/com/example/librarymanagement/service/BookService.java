@@ -2,6 +2,7 @@ package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
+import com.example.librarymanagement.entity.Author;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,28 +35,28 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
-    // Create
+    // CREATE - создать книгу
     public BookDto createBook(BookDto bookDto) {
         Book book = bookMapper.toEntity(bookDto);
         Book savedBook = bookRepository.save(book);
         return bookMapper.toDto(savedBook);
     }
 
-    // Read all
+    // READ ALL - получить все книги (теперь с @EntityGraph!)
     public List<BookDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    // Read by id
+    // READ BY ID - получить книгу по ID
     public BookDto getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(bookMapper::toDto)
                 .orElse(null);
     }
 
-    // Update
+    // UPDATE - обновить книгу
     public BookDto updateBook(Long id, BookDto bookDto) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
@@ -80,7 +82,7 @@ public class BookService {
                 .orElse(null);
     }
 
-    // Delete
+    // DELETE - удалить книгу
     public boolean deleteBook(Long id) {
         if (bookRepository.existsById(id)) {
             bookRepository.deleteById(id);
@@ -89,50 +91,24 @@ public class BookService {
         return false;
     }
 
-    // Поиск по автору (строка)
+    // ПОИСК ПО АВТОРУ (строка)
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    // Поиск по ID автора
+    // ПОИСК ПО ID АВТОРА
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    // Поиск по категории
+    // ПОИСК ПО КАТЕГОРИИ
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .toList();
-    }
-    // Метод для демонстрации проблемы N+1
-    public List<BookDto> getAllBooksWithAuthorNPlusOne() {
-        // 1 запрос: получаем все книги
-        List<Book> books = bookRepository.findAll();
-
-        // Здесь Hibernate сделает N дополнительных запросов,
-        // когда мы начнём обращаться к authorEntity
-        for (Book book : books) {
-            // Принудительно вызываем загрузку автора
-            if (book.getAuthorEntity() != null) {
-                book.getAuthorEntity().getName(); // ТРИГГЕР: здесь будет отдельный запрос для каждой книги!
-            }
-        }
-
-        return books.stream()
-                .map(bookMapper::toDto)
-                .toList();
-    }
-    public List<BookDto> getAllBooksWithAuthorAndCategoriesOptimized() {
-        // Один запрос с JOIN, загружающий всё сразу
-        List<Book> books = bookRepository.findAllWithAuthorAndCategories();
-
-        return books.stream()
-                .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 }
