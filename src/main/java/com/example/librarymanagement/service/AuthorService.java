@@ -38,28 +38,24 @@ public class AuthorService {
         this.bookMapper = bookMapper;
     }
 
-    // CREATE - создать автора
     public AuthorDto createAuthor(AuthorDto authorDto) {
         Author author = authorMapper.toEntity(authorDto);
         Author savedAuthor = authorRepository.save(author);
         return authorMapper.toDto(savedAuthor);
     }
 
-    // READ ALL - получить всех авторов
     public List<AuthorDto> getAllAuthors() {
         return authorRepository.findAll().stream()
                 .map(authorMapper::toDto)
                 .toList();
     }
 
-    // READ BY ID - получить автора по ID
     public AuthorDto getAuthorById(Long id) {
         return authorRepository.findById(id)
                 .map(authorMapper::toDto)
                 .orElse(null);
     }
 
-    // UPDATE - обновить автора
     public AuthorDto updateAuthor(Long id, AuthorDto authorDto) {
         return authorRepository.findById(id)
                 .map(existingAuthor -> {
@@ -73,7 +69,6 @@ public class AuthorService {
                 .orElse(null);
     }
 
-    // DELETE - удалить автора
     public boolean deleteAuthor(Long id) {
         if (authorRepository.existsById(id)) {
             authorRepository.deleteById(id);
@@ -82,41 +77,31 @@ public class AuthorService {
         return false;
     }
 
-    // Метод БЕЗ @Transactional - частичное сохранение (для демонстрации)
     public void saveAuthorWithBooksWithoutTransaction(AuthorWithBooksDto dto) {
-        // Сначала сохраняем автора
         Author author = authorMapper.toEntity(dto.getAuthor());
         Author savedAuthor = authorRepository.save(author);
 
-        // Потом сохраняем каждую книгу
         for (BookDto bookDto : dto.getBooks()) {
-            // Устанавливаем связь с автором
             bookDto.setAuthorId(savedAuthor.getId());
             Book book = bookMapper.toEntity(bookDto);
             bookRepository.save(book);
 
-            // Искусственно создаем ошибку на книге, в названии которой есть "Ошибка"
             if (book.getTitle().contains("Ошибка")) {
                 throw new RuntimeException("Ошибка при сохранении книги!");
             }
         }
     }
 
-    // Метод С @Transactional - полный откат (для демонстрации)
     @Transactional
     public void saveAuthorWithBooksWithTransaction(AuthorWithBooksDto dto) {
-        // Сначала сохраняем автора
         Author author = authorMapper.toEntity(dto.getAuthor());
         Author savedAuthor = authorRepository.save(author);
 
-        // Потом сохраняем каждую книгу
         for (BookDto bookDto : dto.getBooks()) {
-            // Устанавливаем связь с автором
             bookDto.setAuthorId(savedAuthor.getId());
             Book book = bookMapper.toEntity(bookDto);
             bookRepository.save(book);
 
-            // Искусственно создаем ошибку на книге, в названии которой есть "Ошибка"
             if (book.getTitle().contains("Ошибка")) {
                 throw new RuntimeException("Ошибка при сохранении книги!");
             }
