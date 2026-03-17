@@ -34,7 +34,7 @@ public class Book {
     private String title;
 
     @Column(nullable = false, length = 100)
-    private String author;  // пока оставим, позже можно будет убрать
+    private String author;
 
     @Column(name = "publication_year")
     private Integer publicationYear;
@@ -45,12 +45,10 @@ public class Book {
     @Column(length = 1000)
     private String description;
 
-    // Связь с автором (много книг -> один автор)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author authorEntity;
 
-    // Связь с категориями (многие ко многим)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_category",

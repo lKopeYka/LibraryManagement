@@ -110,7 +110,6 @@ public class LoanService {
     public LoanDto updateLoan(Long id, LoanDto loanDto) {
         return loanRepository.findById(id)
                 .map(existingLoan -> {
-                    // Обновляем только разрешённые поля
                     if (loanDto.getDueDate() != null) {
                         existingLoan.setDueDate(loanDto.getDueDate());
                     }

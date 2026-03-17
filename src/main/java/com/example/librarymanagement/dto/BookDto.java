@@ -16,8 +16,6 @@ public class BookDto {
     private Integer publicationYear;
     private String isbn;
     private String description;
-
-    // Поля для связей
     private Long authorId;
     private List<Long> categoryIds;
 }

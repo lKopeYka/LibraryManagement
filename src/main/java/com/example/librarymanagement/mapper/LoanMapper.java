@@ -41,7 +41,6 @@ public class LoanMapper {
         loan.setLoanDate(dto.getLoanDate());
         loan.setDueDate(dto.getDueDate());
         loan.setReturnDate(dto.getReturnDate());
-        // Book и Reader устанавливаются в сервисе через репозитории
         return loan;
     }
 }
