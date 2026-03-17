@@ -117,7 +117,6 @@ public class LoanService {
                         existingLoan.setReturnDate(loanDto.getReturnDate());
                     }
 
-                    // Если хотим изменить книгу или читателя, нужно проверить их существование
                     if (loanDto.getBookId() != null && !loanDto.getBookId().equals(existingLoan.getBook().getId())) {
                         Book book = bookRepository.findById(loanDto.getBookId())
                                 .orElseThrow(() -> new RuntimeException("Книга не найдена"));

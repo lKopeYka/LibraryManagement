@@ -5,15 +5,7 @@ import com.example.librarymanagement.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -84,4 +76,34 @@ public class BookController {
         return ResponseEntity.notFound().build();
     }
 
+
+    @GetMapping("/search/jpql")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorNameJPQL(
+            @RequestParam String authorName) {
+        List<BookDto> books = bookService.getBooksByAuthorNameJPQL(authorName);
+        return ResponseEntity.ok(books);
+    }
+
+
+    @GetMapping("/search/jpql/containing")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingJPQL(
+            @RequestParam String authorName) {
+        List<BookDto> books = bookService.getBooksByAuthorNameContainingJPQL(authorName);
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/search/native")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorNameNative(
+            @RequestParam String authorName) {
+        List<BookDto> books = bookService.getBooksByAuthorNameNative(authorName);
+        return ResponseEntity.ok(books);
+    }
+
+
+    @GetMapping("/search/native/containing")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingNative(
+            @RequestParam String authorName) {
+        List<BookDto> books = bookService.getBooksByAuthorNameContainingNative(authorName);
+        return ResponseEntity.ok(books);
+    }
 }
