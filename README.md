@@ -2,7 +2,7 @@
 
 ## Required links:
 ### [SonarCloud analysis](https://sonarcloud.io/project/overview?id=lKopeYka_LibraryManagement2)
-### [ER-Diagram](ER-Diagramm.png)
+### [ER-Diagram](ER-diagramm.png)
 
 ## Overview
 This is a Java Spring Boot REST API for managing books in a library domain. The project is being developed as part of a series of laboratory works demonstrating modern backend development principles.
