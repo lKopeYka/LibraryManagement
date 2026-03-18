@@ -3,6 +3,7 @@ package com.example.librarymanagement.controller;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,14 +77,12 @@ public class BookController {
         return ResponseEntity.notFound().build();
     }
 
-
     @GetMapping("/search/jpql")
     public ResponseEntity<List<BookDto>> getBooksByAuthorNameJPQL(
             @RequestParam String authorName) {
         List<BookDto> books = bookService.getBooksByAuthorNameJPQL(authorName);
         return ResponseEntity.ok(books);
     }
-
 
     @GetMapping("/search/jpql/containing")
     public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingJPQL(
@@ -99,11 +98,86 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-
     @GetMapping("/search/native/containing")
     public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingNative(
             @RequestParam String authorName) {
         List<BookDto> books = bookService.getBooksByAuthorNameContainingNative(authorName);
         return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<BookDto>> getBooksWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        Page<BookDto> bookPage = bookService.getBooksWithPagination(page, size, sortBy, direction);
+        return ResponseEntity.ok(bookPage);
+    }
+
+    @GetMapping("/page/simple")
+    public ResponseEntity<Page<BookDto>> getBooksWithSimplePagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<BookDto> bookPage = bookService.getBooksWithPagination(page, size);
+        return ResponseEntity.ok(bookPage);
+    }
+
+    @GetMapping("/page/search")
+    public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPagination(
+            @RequestParam String authorName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<BookDto> bookPage = bookService.getBooksByAuthorNameWithPagination(authorName, page, size);
+        return ResponseEntity.ok(bookPage);
+    }
+
+    @GetMapping("/page/search/containing")
+    public ResponseEntity<Page<BookDto>> getBooksByAuthorNameContainingWithPagination(
+            @RequestParam String authorName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<BookDto> bookPage = bookService.getBooksByAuthorNameContainingWithPagination(authorName, page, size);
+        return ResponseEntity.ok(bookPage);
+    }
+
+    // НОВЫЕ ЭНДПОИНТЫ ДЛЯ РАБОТЫ С КЭШЕМ
+
+    @GetMapping("/page/search/cached")
+    public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPaginationAndCache(
+            @RequestParam String authorName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<BookDto> bookPage = bookService.getBooksByAuthorNameWithPaginationAndCache(authorName, page, size);
+        return ResponseEntity.ok(bookPage);
+    }
+
+    @PostMapping("/with-cache")
+    public ResponseEntity<BookDto> createBookWithCache(@RequestBody BookDto bookDto) {
+        BookDto createdBook = bookService.createBookWithCacheInvalidation(bookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+    }
+
+    @PutMapping("/with-cache/{id}")
+    public ResponseEntity<BookDto> updateBookWithCache(@PathVariable Long id, @RequestBody BookDto bookDto) {
+        BookDto updatedBook = bookService.updateBookWithCacheInvalidation(id, bookDto);
+        if (updatedBook == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @DeleteMapping("/with-cache/{id}")
+    public ResponseEntity<Void> deleteBookWithCache(@PathVariable Long id) {
+        boolean deleted = bookService.deleteBookWithCacheInvalidation(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

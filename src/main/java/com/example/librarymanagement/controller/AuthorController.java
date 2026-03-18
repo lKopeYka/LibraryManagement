@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controller;
 
 import com.example.librarymanagement.dto.AuthorDto;
-import com.example.librarymanagement.dto.AuthorWithBooksDto;  // добавить!
+import com.example.librarymanagement.dto.AuthorWithBooksDto;
 import com.example.librarymanagement.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
