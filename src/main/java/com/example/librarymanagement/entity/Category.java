@@ -25,6 +25,6 @@ public class Category {
     @Column(length = 200)
     private String description;
 
-    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "categories")
     private List<Book> books = new ArrayList<>();
 }

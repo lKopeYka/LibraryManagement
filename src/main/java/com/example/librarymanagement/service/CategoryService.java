@@ -1,8 +1,10 @@
 package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.dto.CategoryDto;
+import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.mapper.CategoryMapper;
+import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,18 +17,22 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final BookRepository bookRepository;
     private final CategoryMapper categoryMapper;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryService(CategoryRepository categoryRepository,
+                           BookRepository bookRepository,
+                           CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.bookRepository = bookRepository;
         this.categoryMapper = categoryMapper;
     }
 
     public List<CategoryDto> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(categoryMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public CategoryDto getCategoryById(Long id) {
@@ -52,11 +58,18 @@ public class CategoryService {
                 .orElse(null);
     }
 
+    @Transactional
     public boolean deleteCategory(Long id) {
-        if (categoryRepository.existsById(id)) {
-            categoryRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        return categoryRepository.findById(id)
+                .map(category -> {
+                    List<Book> booksWithCategory = bookRepository.findByCategoriesId(id);
+
+                    for (Book book : booksWithCategory) {
+                        book.getCategories().remove(category);
+                    }
+                    categoryRepository.delete(category);
+                    return true;
+                })
+                .orElse(false);
     }
 }

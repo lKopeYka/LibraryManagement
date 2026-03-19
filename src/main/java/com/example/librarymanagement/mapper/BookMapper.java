@@ -18,6 +18,9 @@ public class BookMapper {
     @Autowired
     private AuthorRepository authorRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     public BookDto toDto(Book book) {
         if (book == null) {
             return null;
@@ -46,7 +49,9 @@ public class BookMapper {
     }
 
     public Book toEntity(BookDto dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
 
         Book book = new Book();
         book.setId(dto.getId());
@@ -59,6 +64,11 @@ public class BookMapper {
         if (dto.getAuthorId() != null) {
             authorRepository.findById(dto.getAuthorId())
                     .ifPresent(book::setAuthorEntity);
+        }
+
+        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
+            List<Category> categories = categoryRepository.findAllById(dto.getCategoryIds());
+            book.setCategories(categories);
         }
 
         return book;
