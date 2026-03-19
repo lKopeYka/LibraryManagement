@@ -53,7 +53,7 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BookDto getBookById(Long id) {
@@ -98,43 +98,43 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorNameJPQL(String authorName) {
         return bookRepository.findBooksByAuthorNameJPQL(authorName).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorNameContainingJPQL(String authorName) {
         return bookRepository.findBooksByAuthorNameContainingJPQL(authorName).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorNameNative(String authorName) {
         return bookRepository.findBooksByAuthorNameNative(authorName).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorNameContainingNative(String authorName) {
         return bookRepository.findBooksByAuthorNameContainingNative(authorName).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Page<BookDto> getBooksWithPagination(int page, int size, String sortBy, String direction) {
