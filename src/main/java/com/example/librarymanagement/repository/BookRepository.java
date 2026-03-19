@@ -16,12 +16,24 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book, Long> {
 
     List<Book> findByAuthor(String author);
+
+    Page<Book> findByAuthor(String author, Pageable pageable);
+
+    Page<Book> findByAuthorContaining(String author, Pageable pageable);
+
     List<Book> findByAuthorEntityId(Long authorId);
+
     List<Book> findByCategoriesId(Long categoryId);
+
+    Page<Book> findByCategoriesId(Long categoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
     @Override
     List<Book> findAll();
+
+    @EntityGraph(attributePaths = {"authorEntity", "categories"})
+    @Override
+    Page<Book> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
     Optional<Book> findWithAuthorAndCategoriesById(Long id);
@@ -29,8 +41,14 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name = :authorName")
     List<Book> findBooksByAuthorNameJPQL(@Param("authorName") String authorName);
 
+    @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name = :authorName")
+    Page<Book> findBooksByAuthorNameJPQL(@Param("authorName") String authorName, Pageable pageable);
+
     @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name LIKE %:authorName%")
     List<Book> findBooksByAuthorNameContainingJPQL(@Param("authorName") String authorName);
+
+    @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name LIKE %:authorName%")
+    Page<Book> findBooksByAuthorNameContainingJPQL(@Param("authorName") String authorName, Pageable pageable);
 
     @Query(value = "SELECT b.* FROM books b "
             + "JOIN authors a ON b.author_id = a.id "
@@ -43,14 +61,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             + "WHERE a.name ILIKE %:authorName%",
             nativeQuery = true)
     List<Book> findBooksByAuthorNameContainingNative(@Param("authorName") String authorName);
-
-    @EntityGraph(attributePaths = {"authorEntity", "categories"})
-    @Override
-    Page<Book> findAll(Pageable pageable);
-
-    @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name = :authorName")
-    Page<Book> findBooksByAuthorNameJPQL(@Param("authorName") String authorName, Pageable pageable);
-
-    @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name LIKE %:authorName%")
-    Page<Book> findBooksByAuthorNameContainingJPQL(@Param("authorName") String authorName, Pageable pageable);
 }
