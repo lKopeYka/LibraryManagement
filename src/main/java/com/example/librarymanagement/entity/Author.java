@@ -41,6 +41,6 @@ public class Author {
     @Column(length = 1000)
     private String biography;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<>();
 }

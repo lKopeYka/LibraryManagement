@@ -145,8 +145,6 @@ public class BookController {
         return ResponseEntity.ok(bookPage);
     }
 
-    // НОВЫЕ ЭНДПОИНТЫ ДЛЯ РАБОТЫ С КЭШЕМ
-
     @GetMapping("/page/search/cached")
     public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPaginationAndCache(
             @RequestParam String authorName,

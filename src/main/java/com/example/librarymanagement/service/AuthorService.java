@@ -70,11 +70,17 @@ public class AuthorService {
     }
 
     public boolean deleteAuthor(Long id) {
-        if (authorRepository.existsById(id)) {
-            authorRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        return authorRepository.findById(id)
+                .map(author -> {
+                    List<Book> books = bookRepository.findByAuthorEntityId(id);
+                    for (Book book : books) {
+                        book.setAuthorEntity(null);
+                        bookRepository.save(book);
+                    }
+                    authorRepository.delete(author);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public void saveAuthorWithBooksWithoutTransaction(AuthorWithBooksDto dto) {

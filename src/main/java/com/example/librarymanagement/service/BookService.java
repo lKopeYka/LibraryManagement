@@ -166,8 +166,6 @@ public class BookService {
         return bookPage.map(bookMapper::toDto);
     }
 
-    // МЕТОДЫ С КЭШИРОВАНИЕМ
-
     public Page<BookDto> getBooksByAuthorNameWithPaginationAndCache(String authorName, int page, int size) {
         BookSearchKey key = new BookSearchKey(authorName, page, size, null, null);
 
