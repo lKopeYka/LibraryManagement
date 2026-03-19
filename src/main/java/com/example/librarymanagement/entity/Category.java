@@ -1,16 +1,9 @@
 package com.example.librarymanagement.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import jakarta.persistence.FetchType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +25,6 @@ public class Category {
     @Column(length = 200)
     private String description;
 
-    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL)
     private List<Book> books = new ArrayList<>();
 }
