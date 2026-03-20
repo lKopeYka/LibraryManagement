@@ -40,8 +40,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name LIKE %:authorName%")
     List<Book> findBooksByAuthorNameContainingJPQL(@Param("authorName") String authorName);
 
-
-
     @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name LIKE %:authorName%")
     Page<Book> findBooksByAuthorNameContainingJPQL(@Param("authorName") String authorName, Pageable pageable);
 
