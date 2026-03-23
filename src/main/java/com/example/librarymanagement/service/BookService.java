@@ -53,7 +53,7 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public BookDto getBookById(Long id) {
@@ -119,20 +119,8 @@ public class BookService {
                 .toList();
     }
 
-    public List<BookDto> getBooksByAuthorNameContainingJPQL(String authorName) {
-        return bookRepository.findBooksByAuthorNameContainingJPQL(authorName).stream()
-                .map(bookMapper::toDto)
-                .toList();
-    }
-
     public List<BookDto> getBooksByAuthorNameNative(String authorName) {
         return bookRepository.findBooksByAuthorNameNative(authorName).stream()
-                .map(bookMapper::toDto)
-                .toList();
-    }
-
-    public List<BookDto> getBooksByAuthorNameContainingNative(String authorName) {
-        return bookRepository.findBooksByAuthorNameContainingNative(authorName).stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
@@ -156,14 +144,8 @@ public class BookService {
 
     public Page<BookDto> getBooksByAuthorNameWithPagination(String authorName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = bookRepository.findBooksByAuthorNameJPQL(authorName, pageable);
-        return bookPage.map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> getBooksByAuthorNameContainingWithPagination(String authorName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = bookRepository.findBooksByAuthorNameContainingJPQL(authorName, pageable);
-        return bookPage.map(bookMapper::toDto);
+        return bookRepository.findBooksByAuthorNameJPQL(authorName, pageable)
+                .map(bookMapper::toDto);
     }
 
     public Page<BookDto> getBooksByAuthorNameWithPaginationAndCache(String authorName, int page, int size) {

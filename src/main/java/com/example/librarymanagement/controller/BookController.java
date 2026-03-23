@@ -6,15 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,24 +24,6 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookDto>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<BookDto>> getBooksByAuthor(@RequestParam(required = false) String author) {
-        if (author != null && !author.isEmpty()) {
-            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
-        }
-        return ResponseEntity.ok(bookService.getAllBooks());
-    }
-
-    @GetMapping("/by-author/{authorId}")
-    public ResponseEntity<List<BookDto>> getBooksByAuthorId(@PathVariable Long authorId) {
-        return ResponseEntity.ok(bookService.getBooksByAuthorId(authorId));
-    }
-
-    @GetMapping("/by-category/{categoryId}")
-    public ResponseEntity<List<BookDto>> getBooksByCategoryId(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(bookService.getBooksByCategoryId(categoryId));
     }
 
     @GetMapping("/{id}")
@@ -85,6 +59,24 @@ public class BookController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDto>> getBooksByAuthor(@RequestParam(required = false) String author) {
+        if (author != null && !author.isEmpty()) {
+            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
+        }
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @GetMapping("/by-author/{authorId}")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorId(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookService.getBooksByAuthorId(authorId));
+    }
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<List<BookDto>> getBooksByCategoryId(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(bookService.getBooksByCategoryId(categoryId));
+    }
+
     @GetMapping("/search/jpql")
     public ResponseEntity<List<BookDto>> getBooksByAuthorNameJPQL(
             @RequestParam String authorName) {
@@ -92,24 +84,10 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-    @GetMapping("/search/jpql/containing")
-    public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingJPQL(
-            @RequestParam String authorName) {
-        List<BookDto> books = bookService.getBooksByAuthorNameContainingJPQL(authorName);
-        return ResponseEntity.ok(books);
-    }
-
     @GetMapping("/search/native")
     public ResponseEntity<List<BookDto>> getBooksByAuthorNameNative(
             @RequestParam String authorName) {
         List<BookDto> books = bookService.getBooksByAuthorNameNative(authorName);
-        return ResponseEntity.ok(books);
-    }
-
-    @GetMapping("/search/native/containing")
-    public ResponseEntity<List<BookDto>> getBooksByAuthorNameContainingNative(
-            @RequestParam String authorName) {
-        List<BookDto> books = bookService.getBooksByAuthorNameContainingNative(authorName);
         return ResponseEntity.ok(books);
     }
 
@@ -143,15 +121,7 @@ public class BookController {
         return ResponseEntity.ok(bookPage);
     }
 
-    @GetMapping("/page/search/containing")
-    public ResponseEntity<Page<BookDto>> getBooksByAuthorNameContainingWithPagination(
-            @RequestParam String authorName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Page<BookDto> bookPage = bookService.getBooksByAuthorNameContainingWithPagination(authorName, page, size);
-        return ResponseEntity.ok(bookPage);
-    }
+    // ============= КЭШ (ПУНКТ 4-5) =============
 
     @GetMapping("/page/search/cached")
     public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPaginationAndCache(
