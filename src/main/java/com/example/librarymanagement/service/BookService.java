@@ -53,7 +53,7 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAllWithDetailsViaEntityGraph().stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BookDto getBookById(Long id) {
@@ -98,19 +98,19 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Page<BookDto> searchBooksWithPagination(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
