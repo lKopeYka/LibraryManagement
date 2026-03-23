@@ -77,17 +77,29 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBooksByCategoryId(categoryId));
     }
 
-    @GetMapping("/search/jpql")
-    public ResponseEntity<List<BookDto>> getBooksByAuthorNameJPQL(
-            @RequestParam String authorName) {
-        List<BookDto> books = bookService.getBooksByAuthorNameJPQL(authorName);
+    @GetMapping("/search/advanced/page")
+    public ResponseEntity<Page<BookDto>> searchBooksWithPagination(
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer fromYear,
+            @RequestParam(required = false) Integer toYear,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<BookDto> books = bookService.searchBooksWithPagination(author, title, fromYear, toYear, categoryId, page, size);
         return ResponseEntity.ok(books);
     }
 
-    @GetMapping("/search/native")
-    public ResponseEntity<List<BookDto>> getBooksByAuthorNameNative(
-            @RequestParam String authorName) {
-        List<BookDto> books = bookService.getBooksByAuthorNameNative(authorName);
+    @GetMapping("/search/advanced/native")
+    public ResponseEntity<Page<BookDto>> searchBooksNative(
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer fromYear,
+            @RequestParam(required = false) Integer toYear,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<BookDto> books = bookService.searchBooksNative(author, title, fromYear, toYear, categoryId, page, size);
         return ResponseEntity.ok(books);
     }
 
@@ -97,7 +109,6 @@ public class BookController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
-
         Page<BookDto> bookPage = bookService.getBooksWithPagination(page, size, sortBy, direction);
         return ResponseEntity.ok(bookPage);
     }
@@ -106,29 +117,15 @@ public class BookController {
     public ResponseEntity<Page<BookDto>> getBooksWithSimplePagination(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-
         Page<BookDto> bookPage = bookService.getBooksWithPagination(page, size);
         return ResponseEntity.ok(bookPage);
     }
-
-    @GetMapping("/page/search")
-    public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPagination(
-            @RequestParam String authorName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Page<BookDto> bookPage = bookService.getBooksByAuthorNameWithPagination(authorName, page, size);
-        return ResponseEntity.ok(bookPage);
-    }
-
-    // ============= КЭШ (ПУНКТ 4-5) =============
 
     @GetMapping("/page/search/cached")
     public ResponseEntity<Page<BookDto>> getBooksByAuthorNameWithPaginationAndCache(
             @RequestParam String authorName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-
         Page<BookDto> bookPage = bookService.getBooksByAuthorNameWithPaginationAndCache(authorName, page, size);
         return ResponseEntity.ok(bookPage);
     }

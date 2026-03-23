@@ -51,13 +51,13 @@ public class BookService {
     }
 
     public List<BookDto> getAllBooks() {
-        return bookRepository.findAll().stream()
+        return bookRepository.findAllWithDetailsViaEntityGraph().stream()
                 .map(bookMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public BookDto getBookById(Long id) {
-        return bookRepository.findById(id)
+        return bookRepository.findWithAuthorAndCategoriesById(id)
                 .map(bookMapper::toDto)
                 .orElse(null);
     }
@@ -98,31 +98,31 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    public List<BookDto> getBooksByAuthorNameJPQL(String authorName) {
-        return bookRepository.findBooksByAuthorNameJPQL(authorName).stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookDto> searchBooksWithPagination(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return bookRepository.searchBooksWithPagination(author, title, fromYear, toYear, categoryId, pageable)
+                .map(bookMapper::toDto);
     }
 
-    public List<BookDto> getBooksByAuthorNameNative(String authorName) {
-        return bookRepository.findBooksByAuthorNameNative(authorName).stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookDto> searchBooksNative(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return bookRepository.searchBooksNative(author, title, fromYear, toYear, categoryId, pageable)
+                .map(bookMapper::toDto);
     }
 
     public Page<BookDto> getBooksWithPagination(int page, int size, String sortBy, String direction) {
@@ -139,12 +139,6 @@ public class BookService {
     public Page<BookDto> getBooksWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return bookRepository.findAll(pageable)
-                .map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> getBooksByAuthorNameWithPagination(String authorName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.findBooksByAuthorNameJPQL(authorName, pageable)
                 .map(bookMapper::toDto);
     }
 
