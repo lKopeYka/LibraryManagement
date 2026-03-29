@@ -4,7 +4,6 @@ import com.example.librarymanagement.cache.BookCacheService;
 import com.example.librarymanagement.cache.BookSearchKey;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
-import com.example.librarymanagement.entity.Author;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
@@ -53,7 +52,7 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAllWithDetailsViaEntityGraph().stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public BookDto getBookById(Long id) {
@@ -98,19 +97,19 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public Page<BookDto> searchBooksWithPagination(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
@@ -151,7 +150,7 @@ public class BookService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = bookRepository.findBooksByAuthorNameJPQL(authorName, pageable);
+        Page<Book> bookPage = bookRepository.searchBooksWithPagination(authorName, null, null, null, null, pageable);
         Page<BookDto> result = bookPage.map(bookMapper::toDto);
 
         cacheService.put(key, result);

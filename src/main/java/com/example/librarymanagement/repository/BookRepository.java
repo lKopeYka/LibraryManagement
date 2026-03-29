@@ -26,15 +26,13 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
     Optional<Book> findWithAuthorAndCategoriesById(Long id);
 
-    @EntityGraph(attributePaths = {"authorEntity", "categories"})
-    @Query("SELECT DISTINCT b FROM Book b " +
-            "LEFT JOIN b.authorEntity a " +
-            "LEFT JOIN b.categories c " +
-            "WHERE (:author IS NULL OR a.name = :author) " +
-            "AND (:title IS NULL OR b.title = :title) " +
-            "AND (:fromYear IS NULL OR b.publicationYear >= :fromYear) " +
-            "AND (:toYear IS NULL OR b.publicationYear <= :toYear) " +
-            "AND (:categoryId IS NULL OR c.id = :categoryId)")
+    @EntityGraph(attributePaths = {"categories"})
+    @Query("SELECT b FROM Book b "
+            + "LEFT JOIN b.authorEntity a "
+            + "WHERE (:author IS NULL OR a.name = :author) "
+            + "AND (:title IS NULL OR b.title = :title) "
+            + "AND (:fromYear IS NULL OR b.publicationYear >= :fromYear) "
+            + "AND (:toYear IS NULL OR b.publicationYear <= :toYear)")
     Page<Book> searchBooksWithPagination(
             @Param("author") String author,
             @Param("title") String title,
@@ -43,24 +41,24 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("categoryId") Long categoryId,
             Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT b.* FROM books b " +
-            "LEFT JOIN authors a ON b.author_id = a.id " +
-            "LEFT JOIN book_category bc ON b.id = bc.book_id " +
-            "LEFT JOIN categories c ON bc.category_id = c.id " +
-            "WHERE (CAST(:author AS VARCHAR) IS NULL OR a.name = CAST(:author AS VARCHAR)) " +
-            "AND (CAST(:title AS VARCHAR) IS NULL OR b.title = CAST(:title AS VARCHAR)) " +
-            "AND (CAST(:fromYear AS INTEGER) IS NULL OR b.publication_year >= CAST(:fromYear AS INTEGER)) " +
-            "AND (CAST(:toYear AS INTEGER) IS NULL OR b.publication_year <= CAST(:toYear AS INTEGER)) " +
-            "AND (CAST(:categoryId AS BIGINT) IS NULL OR c.id = CAST(:categoryId AS BIGINT))",
-            countQuery = "SELECT COUNT(DISTINCT b.id) FROM books b " +
-                    "LEFT JOIN authors a ON b.author_id = a.id " +
-                    "LEFT JOIN book_category bc ON b.id = bc.book_id " +
-                    "LEFT JOIN categories c ON bc.category_id = c.id " +
-                    "WHERE (CAST(:author AS VARCHAR) IS NULL OR a.name = CAST(:author AS VARCHAR)) " +
-                    "AND (CAST(:title AS VARCHAR) IS NULL OR b.title = CAST(:title AS VARCHAR)) " +
-                    "AND (CAST(:fromYear AS INTEGER) IS NULL OR b.publication_year >= CAST(:fromYear AS INTEGER)) " +
-                    "AND (CAST(:toYear AS INTEGER) IS NULL OR b.publication_year <= CAST(:toYear AS INTEGER)) " +
-                    "AND (CAST(:categoryId AS BIGINT) IS NULL OR c.id = CAST(:categoryId AS BIGINT))",
+    @Query(value = "SELECT DISTINCT b.* FROM books b "
+            + "LEFT JOIN authors a ON b.author_id = a.id "
+            + "LEFT JOIN book_category bc ON b.id = bc.book_id "
+            + "LEFT JOIN categories c ON bc.category_id = c.id "
+            + "WHERE (CAST(:author AS VARCHAR) IS NULL OR a.name = CAST(:author AS VARCHAR)) "
+            + "AND (CAST(:title AS VARCHAR) IS NULL OR b.title = CAST(:title AS VARCHAR)) "
+            + "AND (CAST(:fromYear AS INTEGER) IS NULL OR b.publication_year >= CAST(:fromYear AS INTEGER)) "
+            + "AND (CAST(:toYear AS INTEGER) IS NULL OR b.publication_year <= CAST(:toYear AS INTEGER)) "
+            + "AND (CAST(:categoryId AS BIGINT) IS NULL OR c.id = CAST(:categoryId AS BIGINT))",
+            countQuery = "SELECT COUNT(DISTINCT b.id) FROM books b "
+                    + "LEFT JOIN authors a ON b.author_id = a.id "
+                    + "LEFT JOIN book_category bc ON b.id = bc.book_id "
+                    + "LEFT JOIN categories c ON bc.category_id = c.id "
+                    + "WHERE (CAST(:author AS VARCHAR) IS NULL OR a.name = CAST(:author AS VARCHAR)) "
+                    + "AND (CAST(:title AS VARCHAR) IS NULL OR b.title = CAST(:title AS VARCHAR)) "
+                    + "AND (CAST(:fromYear AS INTEGER) IS NULL OR b.publication_year >= CAST(:fromYear AS INTEGER)) "
+                    + "AND (CAST(:toYear AS INTEGER) IS NULL OR b.publication_year <= CAST(:toYear AS INTEGER)) "
+                    + "AND (CAST(:categoryId AS BIGINT) IS NULL OR c.id = CAST(:categoryId AS BIGINT))",
             nativeQuery = true)
     Page<Book> searchBooksNative(
             @Param("author") String author,
@@ -69,7 +67,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("toYear") Integer toYear,
             @Param("categoryId") Long categoryId,
             Pageable pageable);
-
-    @Query("SELECT b FROM Book b JOIN b.authorEntity a WHERE a.name = :authorName")
-    Page<Book> findBooksByAuthorNameJPQL(@Param("authorName") String authorName, Pageable pageable);
 }
