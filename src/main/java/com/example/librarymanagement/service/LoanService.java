@@ -4,6 +4,7 @@ import com.example.librarymanagement.dto.LoanDto;
 import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Loan;
 import com.example.librarymanagement.entity.Reader;
+import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.LoanMapper;
 import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.LoanRepository;
@@ -38,46 +39,46 @@ public class LoanService {
     public List<LoanDto> getAllLoans() {
         return loanRepository.findAll().stream()
                 .map(loanMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public LoanDto getLoanById(Long id) {
         return loanRepository.findById(id)
                 .map(loanMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Выдача не найдена с id: " + id));
     }
 
     public List<LoanDto> getLoansByReaderId(Long readerId) {
         return loanRepository.findByReaderId(readerId).stream()
                 .map(loanMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<LoanDto> getLoansByBookId(Long bookId) {
         return loanRepository.findByBookId(bookId).stream()
                 .map(loanMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<LoanDto> getActiveLoans() {
         return loanRepository.findByReturnDateIsNull().stream()
                 .map(loanMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<LoanDto> getCompletedLoans() {
         return loanRepository.findByReturnDateIsNotNull().stream()
                 .map(loanMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public LoanDto createLoan(LoanDto loanDto) {
         Book book = bookRepository.findById(loanDto.getBookId())
-                .orElseThrow(() -> new RuntimeException("Книга не найдена с ID: " + loanDto.getBookId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + loanDto.getBookId()));
 
         Reader reader = readerRepository.findById(loanDto.getReaderId())
-                .orElseThrow(() -> new RuntimeException("Читатель не найден с ID: " + loanDto.getReaderId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Читатель не найден с id: " + loanDto.getReaderId()));
 
         Loan loan = loanMapper.toEntity(loanDto);
         loan.setBook(book);
@@ -103,7 +104,7 @@ public class LoanService {
                     Loan updatedLoan = loanRepository.save(loan);
                     return loanMapper.toDto(updatedLoan);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Выдача не найдена с id: " + id));
     }
 
     @Transactional
@@ -119,20 +120,20 @@ public class LoanService {
 
                     if (loanDto.getBookId() != null && !loanDto.getBookId().equals(existingLoan.getBook().getId())) {
                         Book book = bookRepository.findById(loanDto.getBookId())
-                                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + loanDto.getBookId()));
                         existingLoan.setBook(book);
                     }
 
                     if (loanDto.getReaderId() != null && !loanDto.getReaderId().equals(existingLoan.getReader().getId())) {
                         Reader reader = readerRepository.findById(loanDto.getReaderId())
-                                .orElseThrow(() -> new RuntimeException("Читатель не найдена"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Читатель не найден с id: " + loanDto.getReaderId()));
                         existingLoan.setReader(reader);
                     }
 
                     Loan updatedLoan = loanRepository.save(existingLoan);
                     return loanMapper.toDto(updatedLoan);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Выдача не найдена с id: " + id));
     }
 
     public boolean deleteLoan(Long id) {

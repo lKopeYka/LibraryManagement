@@ -2,6 +2,7 @@ package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.dto.ReaderDto;
 import com.example.librarymanagement.entity.Reader;
+import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.ReaderMapper;
 import com.example.librarymanagement.repository.ReaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,19 @@ public class ReaderService {
     public List<ReaderDto> getAllReaders() {
         return readerRepository.findAll().stream()
                 .map(readerMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public ReaderDto getReaderById(Long id) {
         return readerRepository.findById(id)
                 .map(readerMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Читатель не найден с id: " + id));
     }
 
     public ReaderDto getReaderByEmail(String email) {
         return readerRepository.findByEmail(email)
                 .map(readerMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Читатель не найден с email: " + email));
     }
 
     public ReaderDto createReader(ReaderDto readerDto) {
@@ -56,7 +57,7 @@ public class ReaderService {
                     Reader updatedReader = readerRepository.save(existingReader);
                     return readerMapper.toDto(updatedReader);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Читатель не найден с id: " + id));
     }
 
     public boolean deleteReader(Long id) {

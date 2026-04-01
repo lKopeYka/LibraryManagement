@@ -1,14 +1,12 @@
 package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.dto.CategoryDto;
-import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
+import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.CategoryMapper;
-import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,15 +15,11 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final BookRepository bookRepository;
     private final CategoryMapper categoryMapper;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository,
-                           BookRepository bookRepository,
-                           CategoryMapper categoryMapper) {
+    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
-        this.bookRepository = bookRepository;
         this.categoryMapper = categoryMapper;
     }
 
@@ -38,7 +32,7 @@ public class CategoryService {
     public CategoryDto getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .map(categoryMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Категория не найдена с id: " + id));
     }
 
     public CategoryDto createCategory(CategoryDto categoryDto) {
@@ -55,21 +49,14 @@ public class CategoryService {
                     Category updatedCategory = categoryRepository.save(existingCategory);
                     return categoryMapper.toDto(updatedCategory);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Категория не найдена с id: " + id));
     }
 
-    @Transactional
     public boolean deleteCategory(Long id) {
-        return categoryRepository.findById(id)
-                .map(category -> {
-                    List<Book> booksWithCategory = bookRepository.findByCategoriesId(id);
-
-                    for (Book book : booksWithCategory) {
-                        book.getCategories().remove(category);
-                    }
-                    categoryRepository.delete(category);
-                    return true;
-                })
-                .orElse(false);
+        if (categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

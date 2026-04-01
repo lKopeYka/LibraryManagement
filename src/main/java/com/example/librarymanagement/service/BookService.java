@@ -5,6 +5,7 @@ import com.example.librarymanagement.cache.BookSearchKey;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
+import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.AuthorRepository;
@@ -52,13 +53,13 @@ public class BookService {
     public List<BookDto> getAllBooks() {
         return bookRepository.findAllWithDetailsViaEntityGraph().stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public BookDto getBookById(Long id) {
         return bookRepository.findWithAuthorAndCategoriesById(id)
                 .map(bookMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + id));
     }
 
     public BookDto updateBook(Long id, BookDto bookDto) {
@@ -83,7 +84,7 @@ public class BookService {
                     Book updatedBook = bookRepository.save(existingBook);
                     return bookMapper.toDto(updatedBook);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + id));
     }
 
     public boolean deleteBook(Long id) {
@@ -97,19 +98,19 @@ public class BookService {
     public List<BookDto> getBooksByAuthor(String author) {
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public Page<BookDto> searchBooksWithPagination(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
