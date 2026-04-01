@@ -3,17 +3,11 @@ package com.example.librarymanagement.controller;
 import com.example.librarymanagement.dto.AuthorDto;
 import com.example.librarymanagement.dto.AuthorWithBooksDto;
 import com.example.librarymanagement.service.AuthorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,24 +30,18 @@ public class AuthorController {
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
         AuthorDto author = authorService.getAuthorById(id);
-        if (author == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(author);
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+    public ResponseEntity<AuthorDto> createAuthor(@Valid @RequestBody AuthorDto authorDto) {
         AuthorDto createdAuthor = authorService.createAuthor(authorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAuthor);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto authorDto) {
+    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id, @Valid @RequestBody AuthorDto authorDto) {
         AuthorDto updatedAuthor = authorService.updateAuthor(id, authorDto);
-        if (updatedAuthor == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedAuthor);
     }
 
@@ -67,7 +55,8 @@ public class AuthorController {
     }
 
     @PostMapping("/with-books/without-transaction")
-    public ResponseEntity<String> saveAuthorWithBooksWithoutTransaction(@RequestBody AuthorWithBooksDto dto) {
+    public ResponseEntity<String> saveAuthorWithBooksWithoutTransaction(
+            @Valid @RequestBody AuthorWithBooksDto dto) {
         try {
             authorService.saveAuthorWithBooksWithoutTransaction(dto);
             return ResponseEntity.ok("Сохранено (без транзакции)");
@@ -78,7 +67,8 @@ public class AuthorController {
     }
 
     @PostMapping("/with-books/with-transaction")
-    public ResponseEntity<String> saveAuthorWithBooksWithTransaction(@RequestBody AuthorWithBooksDto dto) {
+    public ResponseEntity<String> saveAuthorWithBooksWithTransaction(
+            @Valid @RequestBody AuthorWithBooksDto dto) {
         try {
             authorService.saveAuthorWithBooksWithTransaction(dto);
             return ResponseEntity.ok("Сохранено (с транзакцией)");

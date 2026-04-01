@@ -2,17 +2,11 @@ package com.example.librarymanagement.controller;
 
 import com.example.librarymanagement.dto.LoanDto;
 import com.example.librarymanagement.service.LoanService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,9 +39,6 @@ public class LoanController {
     @GetMapping("/{id}")
     public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {
         LoanDto loan = loanService.getLoanById(id);
-        if (loan == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(loan);
     }
 
@@ -62,7 +53,7 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanDto> createLoan(@RequestBody LoanDto loanDto) {
+    public ResponseEntity<LoanDto> createLoan(@Valid @RequestBody LoanDto loanDto) {
         try {
             LoanDto createdLoan = loanService.createLoan(loanDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLoan);
@@ -74,18 +65,12 @@ public class LoanController {
     @PutMapping("/{id}/return")
     public ResponseEntity<LoanDto> returnBook(@PathVariable Long id) {
         LoanDto updatedLoan = loanService.returnBook(id);
-        if (updatedLoan == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedLoan);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LoanDto> updateLoan(@PathVariable Long id, @RequestBody LoanDto loanDto) {
+    public ResponseEntity<LoanDto> updateLoan(@PathVariable Long id, @Valid @RequestBody LoanDto loanDto) {
         LoanDto updatedLoan = loanService.updateLoan(id, loanDto);
-        if (updatedLoan == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedLoan);
     }
 

@@ -2,19 +2,12 @@ package com.example.librarymanagement.controller;
 
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,24 +30,18 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
         BookDto book = bookService.getBookById(id);
-        if (book == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(book);
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
         BookDto createdBook = bookService.createBook(bookDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @Valid @RequestBody BookDto bookDto) {
         BookDto updatedBook = bookService.updateBook(id, bookDto);
-        if (updatedBook == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedBook);
     }
 
@@ -139,13 +126,13 @@ public class BookController {
     }
 
     @PostMapping("/with-cache")
-    public ResponseEntity<BookDto> createBookWithCache(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBookWithCache(@Valid @RequestBody BookDto bookDto) {
         BookDto createdBook = bookService.createBookWithCacheInvalidation(bookDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
     @PutMapping("/with-cache/{id}")
-    public ResponseEntity<BookDto> updateBookWithCache(@PathVariable Long id, @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> updateBookWithCache(@PathVariable Long id, @Valid @RequestBody BookDto bookDto) {
         BookDto updatedBook = bookService.updateBookWithCacheInvalidation(id, bookDto);
         if (updatedBook == null) {
             return ResponseEntity.notFound().build();
