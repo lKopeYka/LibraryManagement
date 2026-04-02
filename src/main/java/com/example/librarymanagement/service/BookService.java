@@ -7,8 +7,8 @@ import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
-import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.AuthorRepository;
+import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
