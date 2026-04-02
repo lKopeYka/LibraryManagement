@@ -52,7 +52,7 @@ public class AuthorService {
         log.debug("Получение всех авторов");
         return authorRepository.findAll().stream()
                 .map(authorMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public AuthorDto getAuthorById(Long id) {
