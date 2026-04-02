@@ -2,7 +2,6 @@ package com.example.librarymanagement.mapper;
 
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
-import com.example.librarymanagement.entity.Author;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.repository.AuthorRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
