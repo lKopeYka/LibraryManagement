@@ -48,7 +48,7 @@ public class BookService {
     public List<BookDto> createBooksBulk(List<BookDto> bookDtos) {
         return bookDtos.stream()
                 .map(this::createBook)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> createBooksBulkWithoutTransaction(List<BookDto> bookDtos) {
@@ -78,7 +78,7 @@ public class BookService {
 
                     return bookMapper.toDto(savedBook);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -109,7 +109,7 @@ public class BookService {
 
                     return bookMapper.toDto(savedBook);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         log.info("Все книги сохранены успешно, транзакция зафиксирована");
         return result;
@@ -119,7 +119,7 @@ public class BookService {
         log.debug("Получение всех книг");
         return bookRepository.findAllWithDetails().stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BookDto getBookById(Long id) {
@@ -177,20 +177,20 @@ public class BookService {
         log.debug("Поиск книг по автору: {}", author);
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         log.debug("Поиск книг по id автора: {}", authorId);
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
         log.debug("Поиск книг по id категории: {}", categoryId);
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
