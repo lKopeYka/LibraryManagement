@@ -19,6 +19,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByAuthorEntityId(Long authorId);
     List<Book> findByCategoriesId(Long categoryId);
 
+    @Query("SELECT b FROM Book b LEFT JOIN FETCH b.authorEntity a LEFT JOIN FETCH b.categories c")
+    List<Book> findAllWithDetails();
+
     @EntityGraph(attributePaths = {"authorEntity", "categories"})
     @Query("SELECT b FROM Book b")
     List<Book> findAllWithDetailsViaEntityGraph();

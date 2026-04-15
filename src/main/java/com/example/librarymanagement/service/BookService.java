@@ -1,46 +1,42 @@
 package com.example.librarymanagement.service;
 
-import com.example.librarymanagement.cache.BookCacheService;
-import com.example.librarymanagement.cache.BookSearchKey;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
-import com.example.librarymanagement.repository.AuthorRepository;
 import com.example.librarymanagement.repository.BookRepository;
+import com.example.librarymanagement.repository.AuthorRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class BookService {
+
+    private static final Logger log = LoggerFactory.getLogger(BookService.class);
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
-    private final BookCacheService cacheService;
 
     @Autowired
     public BookService(BookRepository bookRepository,
                        AuthorRepository authorRepository,
                        CategoryRepository categoryRepository,
-                       BookMapper bookMapper,
-                       BookCacheService cacheService) {
+                       BookMapper bookMapper) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.categoryRepository = categoryRepository;
         this.bookMapper = bookMapper;
-        this.cacheService = cacheService;
     }
 
     public BookDto createBook(BookDto bookDto) {
@@ -49,19 +45,95 @@ public class BookService {
         return bookMapper.toDto(savedBook);
     }
 
+    public List<BookDto> createBooksBulk(List<BookDto> bookDtos) {
+        return bookDtos.stream()
+                .map(this::createBook)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookDto> createBooksBulkWithoutTransaction(List<BookDto> bookDtos) {
+        log.info("Массовое создание книг (БЕЗ транзакции). Получено книг: {}", bookDtos.size());
+
+        return bookDtos.stream()
+                .map(bookDto -> {
+                    Book book = bookMapper.toEntity(bookDto);
+
+                    Optional.ofNullable(bookDto.getAuthorId())
+                            .flatMap(authorRepository::findById)
+                            .ifPresent(book::setAuthorEntity);
+
+                    Optional.ofNullable(bookDto.getCategoryIds())
+                            .ifPresent(categoryIds -> {
+                                List<Category> categories = categoryRepository.findAllById(categoryIds);
+                                book.setCategories(categories);
+                            });
+
+                    Book savedBook = bookRepository.save(book);
+                    log.info("Книга сохранена: {}", savedBook.getTitle());
+
+                    if (book.getTitle().contains("Ошибка")) {
+                        log.error("Ошибка при сохранении книги: {}", book.getTitle());
+                        throw new RuntimeException("Ошибка при сохранении книги: " + book.getTitle());
+                    }
+
+                    return bookMapper.toDto(savedBook);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<BookDto> createBooksBulkWithTransaction(List<BookDto> bookDtos) {
+        log.info("Массовое создание книг (С транзакцией). Получено книг: {}", bookDtos.size());
+
+        List<BookDto> result = bookDtos.stream()
+                .map(bookDto -> {
+                    Book book = bookMapper.toEntity(bookDto);
+
+                    Optional.ofNullable(bookDto.getAuthorId())
+                            .flatMap(authorRepository::findById)
+                            .ifPresent(book::setAuthorEntity);
+
+                    Optional.ofNullable(bookDto.getCategoryIds())
+                            .ifPresent(categoryIds -> {
+                                List<Category> categories = categoryRepository.findAllById(categoryIds);
+                                book.setCategories(categories);
+                            });
+
+                    Book savedBook = bookRepository.save(book);
+                    log.info("Книга сохранена: {}", savedBook.getTitle());
+
+                    if (book.getTitle().contains("Ошибка")) {
+                        log.error("Ошибка при сохранении книги: {}", book.getTitle());
+                        throw new RuntimeException("Ошибка при сохранении книги: " + book.getTitle());
+                    }
+
+                    return bookMapper.toDto(savedBook);
+                })
+                .collect(Collectors.toList());
+
+        log.info("Все книги сохранены успешно, транзакция зафиксирована");
+        return result;
+    }
+
     public List<BookDto> getAllBooks() {
-        return bookRepository.findAllWithDetailsViaEntityGraph().stream()
+        log.debug("Получение всех книг");
+        return bookRepository.findAllWithDetails().stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public BookDto getBookById(Long id) {
+        log.debug("Поиск книги по id: {}", id);
         return bookRepository.findWithAuthorAndCategoriesById(id)
                 .map(bookMapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Книга не найдена с id: {}", id);
+                    return new ResourceNotFoundException("Книга не найдена с id: " + id);
+                });
     }
 
     public BookDto updateBook(Long id, BookDto bookDto) {
+        log.info("Обновление книги с id: {}", id);
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     existingBook.setTitle(bookDto.getTitle());
@@ -81,114 +153,44 @@ public class BookService {
                     }
 
                     Book updatedBook = bookRepository.save(existingBook);
+                    log.info("Книга с id: {} обновлена", id);
                     return bookMapper.toDto(updatedBook);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена с id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Книга не найдена для обновления с id: {}", id);
+                    return new ResourceNotFoundException("Книга не найдена с id: " + id);
+                });
     }
 
     public boolean deleteBook(Long id) {
+        log.info("Удаление книги с id: {}", id);
         if (bookRepository.existsById(id)) {
             bookRepository.deleteById(id);
+            log.info("Книга с id: {} удалена", id);
             return true;
         }
+        log.warn("Книга не найдена для удаления с id: {}", id);
         return false;
     }
 
     public List<BookDto> getBooksByAuthor(String author) {
+        log.debug("Поиск книг по автору: {}", author);
         return bookRepository.findByAuthor(author).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
+        log.debug("Поиск книг по id автора: {}", authorId);
         return bookRepository.findByAuthorEntityId(authorId).stream()
                 .map(bookMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<BookDto> getBooksByCategoryId(Long categoryId) {
+        log.debug("Поиск книг по id категории: {}", categoryId);
         return bookRepository.findByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDto)
-                .toList();
-    }
-
-    public Page<BookDto> searchBooksWithPagination(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.searchBooksWithPagination(author, title, fromYear, toYear, categoryId, pageable)
-                .map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> searchBooksNative(String author, String title, Integer fromYear, Integer toYear, Long categoryId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.searchBooksNative(author, title, fromYear, toYear, categoryId, pageable)
-                .map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> getBooksWithPagination(int page, int size, String sortBy, String direction) {
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return bookRepository.findAll(pageable)
-                .map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> getBooksWithPagination(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.findAll(pageable)
-                .map(bookMapper::toDto);
-    }
-
-    public Page<BookDto> getBooksByAuthorNameWithPaginationAndCache(String authorName, int page, int size) {
-        BookSearchKey key = new BookSearchKey(authorName, page, size, null, null);
-
-        Page<BookDto> cachedResult = cacheService.get(key);
-        if (cachedResult != null) {
-            return cachedResult;
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = bookRepository.searchBooksWithPagination(authorName, null, null, null, null, pageable);
-        Page<BookDto> result = bookPage.map(bookMapper::toDto);
-
-        cacheService.put(key, result);
-        return result;
-    }
-
-    public BookDto createBookWithCacheInvalidation(BookDto bookDto) {
-        BookDto createdBook = createBook(bookDto);
-
-        if (createdBook != null && bookDto.getAuthorId() != null) {
-            authorRepository.findById(bookDto.getAuthorId())
-                    .ifPresent(author -> cacheService.removeByAuthor(author.getName()));
-        }
-
-        return createdBook;
-    }
-
-    public BookDto updateBookWithCacheInvalidation(Long id, BookDto bookDto) {
-        BookDto updatedBook = updateBook(id, bookDto);
-
-        if (updatedBook != null && bookDto.getAuthorId() != null) {
-            authorRepository.findById(bookDto.getAuthorId())
-                    .ifPresent(author -> cacheService.removeByAuthor(author.getName()));
-        }
-
-        return updatedBook;
-    }
-
-    public boolean deleteBookWithCacheInvalidation(Long id) {
-        return bookRepository.findById(id)
-                .map(book -> {
-                    String authorName = book.getAuthorEntity() != null ? book.getAuthorEntity().getName() : null;
-                    boolean deleted = deleteBook(id);
-                    if (deleted && authorName != null) {
-                        cacheService.removeByAuthor(authorName);
-                    }
-                    return deleted;
-                })
-                .orElse(false);
+                .collect(Collectors.toList());
     }
 }
