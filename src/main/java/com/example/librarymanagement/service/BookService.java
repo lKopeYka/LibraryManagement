@@ -3,6 +3,7 @@ package com.example.librarymanagement.service;
 import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
+import com.example.librarymanagement.exception.BookSaveException;
 import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
@@ -73,7 +74,7 @@ public class BookService {
 
                     if (book.getTitle().contains("Ошибка")) {
                         log.error("Ошибка при сохранении книги: {}", book.getTitle());
-                        throw new RuntimeException("Ошибка при сохранении книги: " + book.getTitle());
+                        throw new BookSaveException("Ошибка при сохранении книги: " + book.getTitle());
                     }
 
                     return bookMapper.toDto(savedBook);
@@ -104,7 +105,7 @@ public class BookService {
 
                     if (book.getTitle().contains("Ошибка")) {
                         log.error("Ошибка при сохранении книги: {}", book.getTitle());
-                        throw new RuntimeException("Ошибка при сохранении книги: " + book.getTitle());
+                        throw new BookSaveException("Ошибка при сохранении книги: " + book.getTitle());
                     }
 
                     return bookMapper.toDto(savedBook);
