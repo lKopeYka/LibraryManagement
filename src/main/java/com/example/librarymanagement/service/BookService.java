@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,8 +116,8 @@ public class BookService {
     }
 
     public List<BookDto> getAllBooks() {
-        log.debug("Получение всех книг");
         return bookRepository.findAllWithDetails().stream()
+                .sorted(Comparator.comparing(Book::getId))
                 .map(bookMapper::toDto)
                 .toList();
     }
