@@ -6,8 +6,8 @@ import com.example.librarymanagement.entity.Category;
 import com.example.librarymanagement.exception.BookSaveException;
 import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
-import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.AuthorRepository;
+import com.example.librarymanagement.repository.BookRepository;
 import com.example.librarymanagement.repository.CategoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -69,13 +68,13 @@ public class BookService {
                                 book.setCategories(categories);
                             });
 
+                    if (book.getTitle() == null || book.getTitle().isBlank()) {
+                        log.error("Название книги не может быть пустым");
+                        throw new BookSaveException("Название книги не может быть пустым");
+                    }
+
                     Book savedBook = bookRepository.save(book);
                     log.info("Книга сохранена: {}", savedBook.getTitle());
-
-                    if (book.getTitle().contains("Ошибка")) {
-                        log.error("Ошибка при сохранении книги: {}", book.getTitle());
-                        throw new BookSaveException("Ошибка при сохранении книги: " + book.getTitle());
-                    }
 
                     return bookMapper.toDto(savedBook);
                 })
@@ -103,9 +102,9 @@ public class BookService {
                     Book savedBook = bookRepository.save(book);
                     log.info("Книга сохранена: {}", savedBook.getTitle());
 
-                    if (book.getTitle().contains("Ошибка")) {
-                        log.error("Ошибка при сохранении книги: {}", book.getTitle());
-                        throw new BookSaveException("Ошибка при сохранении книги: " + book.getTitle());
+                    if (book.getTitle() == null || book.getTitle().isBlank()) {
+                        log.error("Название книги не может быть пустым");
+                        throw new BookSaveException("Название книги не может быть пустым");
                     }
 
                     return bookMapper.toDto(savedBook);

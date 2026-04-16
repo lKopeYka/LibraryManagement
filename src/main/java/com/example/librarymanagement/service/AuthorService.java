@@ -103,11 +103,6 @@ public class AuthorService {
             Book book = bookMapper.toEntity(bookDto);
             bookRepository.save(book);
             log.info("Книга сохранена: {}", book.getTitle());
-
-            if (book.getTitle().contains("Ошибка")) {
-                log.error("Ошибка при сохранении книги: {}", book.getTitle());
-                throw new RuntimeException("Ошибка при сохранении книги!");
-            }
         }
         log.info("Все книги сохранены успешно");
     }

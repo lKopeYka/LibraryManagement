@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,23 +24,70 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @Operation(summary = "Массовое создание книг (bulk-операция)")
-    @PostMapping("/bulk")
-    public ResponseEntity<List<BookDto>> createBooksBulk(@Valid @RequestBody List<BookDto> bookDtos) {
-        List<BookDto> createdBooks = bookService.createBooksBulk(bookDtos);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBooks);
+    @GetMapping
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 
-    @Operation(summary = "Массовое создание книг (без транзакции)")
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
+        BookDto book = bookService.getBookById(id);
+        if (book == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(book);
+    }
+
+    @PostMapping
+    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
+        BookDto createdBook = bookService.createBook(bookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @Valid @RequestBody BookDto bookDto) {
+        BookDto updatedBook = bookService.updateBook(id, bookDto);
+        if (updatedBook == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        boolean deleted = bookService.deleteBook(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDto>> getBooksByAuthor(@RequestParam(required = false) String author) {
+        if (author != null && !author.isEmpty()) {
+            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
+        }
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @GetMapping("/by-author/{authorId}")
+    public ResponseEntity<List<BookDto>> getBooksByAuthorId(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookService.getBooksByAuthorId(authorId));
+    }
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<List<BookDto>> getBooksByCategoryId(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(bookService.getBooksByCategoryId(categoryId));
+    }
+
     @PostMapping("/bulk/without-transaction")
-    public ResponseEntity<List<BookDto>> createBooksBulkWithoutTransaction(@Valid @RequestBody List<BookDto> bookDtos) {
+    public ResponseEntity<List<BookDto>> createBooksBulkWithoutTransaction(@RequestBody List<BookDto> bookDtos) {
         List<BookDto> createdBooks = bookService.createBooksBulkWithoutTransaction(bookDtos);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBooks);
     }
 
-    @Operation(summary = "Массовое создание книг (с транзакцией)")
     @PostMapping("/bulk/with-transaction")
-    public ResponseEntity<List<BookDto>> createBooksBulkWithTransaction(@Valid @RequestBody List<BookDto> bookDtos) {
+    public ResponseEntity<List<BookDto>> createBooksBulkWithTransaction(@RequestBody List<BookDto> bookDtos) {
         List<BookDto> createdBooks = bookService.createBooksBulkWithTransaction(bookDtos);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBooks);
     }

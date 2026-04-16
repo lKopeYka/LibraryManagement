@@ -4,6 +4,7 @@ import com.example.librarymanagement.dto.BookDto;
 import com.example.librarymanagement.entity.Author;
 import com.example.librarymanagement.entity.Book;
 import com.example.librarymanagement.entity.Category;
+import com.example.librarymanagement.exception.BookSaveException;
 import com.example.librarymanagement.exception.ResourceNotFoundException;
 import com.example.librarymanagement.mapper.BookMapper;
 import com.example.librarymanagement.repository.BookRepository;
@@ -112,21 +113,18 @@ class BookServiceTest {
     @Test
     void createBooksBulkWithoutTransaction_Error() {
         BookDto errorBookDto = new BookDto();
-        errorBookDto.setTitle("Книга с Ошибкой");
+        errorBookDto.setTitle("");
         errorBookDto.setAuthorId(1L);
 
         Book errorBook = new Book();
-        errorBook.setTitle("Книга с Ошибкой");
+        errorBook.setTitle("");
 
         when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
         when(bookMapper.toEntity(errorBookDto)).thenReturn(errorBook);
-        doThrow(new RuntimeException("Ошибка при сохранении книги")).when(bookRepository).save(any(Book.class));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(BookSaveException.class, () -> {
             bookService.createBooksBulkWithoutTransaction(List.of(errorBookDto));
         });
-
-        assertTrue(exception.getMessage().contains("Ошибка при сохранении книги"));
     }
 
     @Test
@@ -144,23 +142,21 @@ class BookServiceTest {
     }
 
     @Test
-    void createBooksBulkWithTransaction_RollbackOnError() {
+    void createBooksBulkWithTransaction_Error() {
         BookDto errorBookDto = new BookDto();
-        errorBookDto.setTitle("Книга с Ошибкой");
+        errorBookDto.setTitle("");
         errorBookDto.setAuthorId(1L);
 
         Book errorBook = new Book();
-        errorBook.setTitle("Книга с Ошибкой");
+        errorBook.setTitle("");
 
         when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
         when(bookMapper.toEntity(errorBookDto)).thenReturn(errorBook);
-        doThrow(new RuntimeException("Ошибка при сохранении книги")).when(bookRepository).save(any(Book.class));
+        when(bookRepository.save(any(Book.class))).thenReturn(errorBook);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(BookSaveException.class, () -> {
             bookService.createBooksBulkWithTransaction(List.of(errorBookDto));
         });
-
-        assertTrue(exception.getMessage().contains("Ошибка при сохранении книги"));
     }
 
     @Test
