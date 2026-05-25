@@ -16,6 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +61,7 @@ class BookServiceTest {
         bookDto = new BookDto();
         bookDto.setId(1L);
         bookDto.setTitle("Война и мир");
-        bookDto.setAuthor("Лев Толстой");
+        bookDto.setPublicationYear(1869);
         bookDto.setAuthorId(1L);
         bookDto.setCategoryIds(List.of(1L, 2L));
 
@@ -152,7 +157,6 @@ class BookServiceTest {
 
         when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
         when(bookMapper.toEntity(errorBookDto)).thenReturn(errorBook);
-        when(bookRepository.save(any(Book.class))).thenReturn(errorBook);
 
         assertThrows(BookSaveException.class, () -> {
             bookService.createBooksBulkWithTransaction(List.of(errorBookDto));
@@ -234,16 +238,6 @@ class BookServiceTest {
     }
 
     @Test
-    void getBooksByAuthor_Success() {
-        when(bookRepository.findByAuthor("Лев Толстой")).thenReturn(List.of(book));
-        when(bookMapper.toDto(book)).thenReturn(bookDto);
-
-        List<BookDto> result = bookService.getBooksByAuthor("Лев Толстой");
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
     void getBooksByAuthorId_Success() {
         when(bookRepository.findByAuthorEntityId(1L)).thenReturn(List.of(book));
         when(bookMapper.toDto(book)).thenReturn(bookDto);
@@ -261,5 +255,70 @@ class BookServiceTest {
         List<BookDto> result = bookService.getBooksByCategoryId(1L);
 
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void getBooksWithPagination_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
+
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(bookDto);
+
+        Page<BookDto> result = bookService.getBooksWithPagination(0, 10);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void getBooksWithPaginationWithSort_Success() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
+
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(bookDto);
+
+        Page<BookDto> result = bookService.getBooksWithPagination(0, 10, "id", "asc");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void searchBooksWithPagination_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
+
+        when(bookRepository.searchBooksWithPagination(any(), any(), any(), any(), any(), any())).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(bookDto);
+
+        Page<BookDto> result = bookService.searchBooksWithPagination(null, null, null, null, null, 0, 10);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void searchBooksNative_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
+
+        when(bookRepository.searchBooksNative(any(), any(), any(), any(), any(), any())).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(bookDto);
+
+        Page<BookDto> result = bookService.searchBooksNative(null, null, null, null, null, 0, 10);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void getBooksByAuthorNameWithPaginationAndCache_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
+
+        when(bookRepository.searchBooksWithPagination(eq("Лев Толстой"), isNull(), isNull(), isNull(), isNull(), any(Pageable.class))).thenReturn(bookPage);
+        when(bookMapper.toDto(book)).thenReturn(bookDto);
+
+        Page<BookDto> result = bookService.getBooksByAuthorNameWithPaginationAndCache("Лев Толстой", 0, 10);
+
+        assertNotNull(result);
     }
 }

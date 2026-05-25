@@ -34,9 +34,6 @@ public class Book {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(nullable = false, length = 100)
-    private String author;
-
     @Column(name = "publication_year")
     private Integer publicationYear;
 

@@ -30,7 +30,7 @@ public class AsyncTaskService {
         taskStatus.put(taskId, "IN_PROGRESS");
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(15000);
             log.info("Асинхронная обработка завершена, taskId: {}", taskId);
             taskStatus.put(taskId, "COMPLETED");
             return CompletableFuture.completedFuture("Обработка завершена");

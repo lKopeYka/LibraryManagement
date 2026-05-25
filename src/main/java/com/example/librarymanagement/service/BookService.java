@@ -147,7 +147,6 @@ public class BookService {
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     existingBook.setTitle(bookDto.getTitle());
-                    existingBook.setAuthor(bookDto.getAuthor());
                     existingBook.setPublicationYear(bookDto.getPublicationYear());
                     existingBook.setIsbn(bookDto.getIsbn());
                     existingBook.setDescription(bookDto.getDescription());
@@ -183,12 +182,7 @@ public class BookService {
         return false;
     }
 
-    public List<BookDto> getBooksByAuthor(String author) {
-        log.debug("Поиск книг по автору: {}", author);
-        return bookRepository.findByAuthor(author).stream()
-                .map(bookMapper::toDto)
-                .toList();
-    }
+    // Метод getBooksByAuthor УДАЛЕН
 
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         log.debug("Поиск книг по id автора: {}", authorId);

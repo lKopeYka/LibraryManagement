@@ -85,12 +85,9 @@ public class AsyncController {
     public ResponseEntity<Map<String, Object>> raceConditionDemo() {
         int threads = 60;
         int incrementsPerThread = 2000;
-        int expected = threads * incrementsPerThread;
-
         int[] unsafeCounter = {0};
         SyncCounter syncCounter = new SyncCounter();
         AtomicInteger atomicCounter = new AtomicInteger(0);
-
         ExecutorService executor = Executors.newFixedThreadPool(threads);
 
         for (int i = 0; i < threads; i++) {
@@ -113,11 +110,11 @@ public class AsyncController {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("threads", threads);
         result.put("incrementsPerThread", incrementsPerThread);
+        int expected = threads * incrementsPerThread;  // ← объявление перед использованием
         result.put("expected", expected);
         result.put("unsafeResult", unsafeCounter[0]);
         result.put("synchronizedResult", syncCounter.getValue());
         result.put("atomicResult", atomicCounter.get());
-
         return ResponseEntity.ok(result);
     }
 

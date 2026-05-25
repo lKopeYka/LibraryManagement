@@ -25,11 +25,6 @@ public class BookDto {
     @Size(min = 1, max = 200, message = "Название книги должно быть от 1 до 200 символов")
     private String title;
 
-    @Schema(description = "Автор книги", example = "Лев Толстой", required = true)
-    @NotBlank(message = "Автор не может быть пустым")
-    @Size(min = 1, max = 100, message = "Имя автора должно быть от 1 до 100 символов")
-    private String author;
-
     @Schema(description = "Год издания", example = "1869")
     @Min(value = 0, message = "Год издания не может быть отрицательным")
     @Max(value = 2100, message = "Год издания не может быть больше 2100")

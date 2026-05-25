@@ -55,14 +55,6 @@ public class BookController {
         return ResponseEntity.ok(bookPage);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<BookDto>> getBooksByAuthor(@RequestParam(required = false) String author) {
-        if (author != null && !author.isEmpty()) {
-            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
-        }
-        return ResponseEntity.ok(bookService.getAllBooks());
-    }
-
     @GetMapping("/by-author/{authorId}")
     public ResponseEntity<List<BookDto>> getBooksByAuthorId(@PathVariable Long authorId) {
         return ResponseEntity.ok(bookService.getBooksByAuthorId(authorId));

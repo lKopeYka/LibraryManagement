@@ -15,7 +15,6 @@ import java.util.Optional;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    List<Book> findByAuthor(String author);
     List<Book> findByAuthorEntityId(Long authorId);
     List<Book> findByCategoriesId(Long categoryId);
 
@@ -32,10 +31,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @EntityGraph(attributePaths = {"categories"})
     @Query("SELECT b FROM Book b "
             + "LEFT JOIN b.authorEntity a "
+            + "LEFT JOIN b.categories c "
             + "WHERE (:author IS NULL OR a.name = :author) "
             + "AND (:title IS NULL OR b.title = :title) "
             + "AND (:fromYear IS NULL OR b.publicationYear >= :fromYear) "
-            + "AND (:toYear IS NULL OR b.publicationYear <= :toYear)")
+            + "AND (:toYear IS NULL OR b.publicationYear <= :toYear) "
+            + "AND (:categoryId IS NULL OR c.id = :categoryId)")
     Page<Book> searchBooksWithPagination(
             @Param("author") String author,
             @Param("title") String title,
