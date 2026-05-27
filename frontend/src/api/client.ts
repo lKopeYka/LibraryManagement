@@ -1,10 +1,17 @@
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://librarymanagement-nxl6.onrender.com/api';
+const getBaseUrl = () => {
+
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8080/api';
+  }
+
+  return 'https://librarymanagement-nxl6.onrender.com/api';
+};
 
 const api: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getBaseUrl(),
   headers: { 'Content-Type': 'application/json' }
 });
 
