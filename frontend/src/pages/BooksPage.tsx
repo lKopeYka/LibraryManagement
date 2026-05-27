@@ -80,7 +80,6 @@ const BooksPage: React.FC = () => {
     const handleClose = () => {
         setOpen(false);
         setEditingBook(null);
-        // Сброс формы без author
         setFormData({ title: '', publicationYear: '', authorId: '', categoryIds: [] });
     };
 

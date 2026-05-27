@@ -181,9 +181,7 @@ public class BookService {
         log.warn("Книга не найдена для удаления с id: {}", id);
         return false;
     }
-
-    // Метод getBooksByAuthor УДАЛЕН
-
+    
     public List<BookDto> getBooksByAuthorId(Long authorId) {
         log.debug("Поиск книг по id автора: {}", authorId);
         return bookRepository.findByAuthorEntityId(authorId).stream()

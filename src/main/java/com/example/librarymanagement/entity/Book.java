@@ -43,9 +43,9 @@ public class Book {
     @Column(length = 1000)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author authorEntity;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "author_id")
+        private Author authorEntity;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
