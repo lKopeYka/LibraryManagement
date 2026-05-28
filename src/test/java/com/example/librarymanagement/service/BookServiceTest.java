@@ -287,7 +287,7 @@ class BookServiceTest {
     void getBooksByAuthorNameWithPaginationAndCache_Success() {
         Page<Book> bookPage = new PageImpl<>(List.of(book));
 
-        // Исправлено: поведение мока кеша
+
         when(cacheService.get(any())).thenReturn(null);
 
         when(bookRepository.searchBooksWithPagination(eq("Лев Толстой"), isNull(), isNull(), isNull(), isNull(), any(Pageable.class))).thenReturn(bookPage);
