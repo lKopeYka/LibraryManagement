@@ -4,8 +4,21 @@ on:
     branches: [ main, master ]
 
 jobs:
-  # 1. Отдельный этап для тестирования
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Настройка Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Сборка проекта
+        run: mvn clean package -DskipTests
+
   test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,18 +31,8 @@ jobs:
       - name: Запуск тестов
         run: mvn test
 
-  # 2. Этап сборки (зависит от успешного прохождения тестов)
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Сборка проекта
-        run: mvn clean package -DskipTests
-
-  # 3. Деплой (зависит от успешной сборки)
   deploy:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Деплой на Render
@@ -40,7 +43,6 @@ jobs:
             echo "Секрет RENDER_DEPLOY_HOOK_URL пока не добавлен."
           fi
 
-  # 4. Проверка (зависит от деплоя)
   healthcheck:
     needs: deploy
     runs-on: ubuntu-latest
