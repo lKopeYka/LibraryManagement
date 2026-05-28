@@ -18,9 +18,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Сборка проекта без тестов
-        # Флаг -DskipTests гарантирует, что сборка не упадет из-за базы данных
-        run: mvn clean package -DskipTests
+      - name: Сборка проекта
+        run: mvn clean package -Dspring.profiles.active=test
 
   deploy:
     needs: build
