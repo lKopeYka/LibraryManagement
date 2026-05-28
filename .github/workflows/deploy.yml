@@ -1,43 +1,49 @@
-name: CI/CD Pipeline Lab 8
-
+name: CI/CD Pipeline
 on:
   push:
     branches: [ main, master ]
 
 jobs:
-  build:
+  # 1. Отдельный этап для тестирования
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Скачивание кода
-        uses: actions/checkout@v4
-
-      - name: Настройка Java 17
+      - uses: actions/checkout@v4
+      - name: Настройка Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+      - name: Запуск тестов
+        run: mvn test
 
+  # 2. Этап сборки (зависит от успешного прохождения тестов)
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Сборка проекта
-        run: mvn clean package -Dspring.profiles.active=test
+        run: mvn clean package -DskipTests
 
+  # 3. Деплой (зависит от успешной сборки)
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Деплой на Render
-        # Если секрет еще не настроен, этот шаг просто отправит запрос, когда ты его добавишь
         run: |
           if [ "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" != "" ]; then
             curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
           else
-            echo "Секрет RENDER_DEPLOY_HOOK_URL пока не добавлен, пропускаем."
+            echo "Секрет RENDER_DEPLOY_HOOK_URL пока не добавлен."
           fi
 
+  # 4. Проверка (зависит от деплоя)
   healthcheck:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Проверка работоспособности сайта
-        # Просто проверяем, что твой живой бэкенд в облаке отвечает. Он вернет [], шаг станет зеленым!
-        run: curl --fail https://librarymanagement-nxl6.onrender.com/api/authors || exit 1
+      - name: Проверка работоспособности
+        run: curl --fail https://librarymanagement-nx16.onrender.com/api/authors || exit 1
