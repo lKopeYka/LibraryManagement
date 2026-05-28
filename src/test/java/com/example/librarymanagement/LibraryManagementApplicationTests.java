@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class LibraryManagementApplicationTests {
-
     @Test
     void alwaysPasses() {
         assertTrue(true);
