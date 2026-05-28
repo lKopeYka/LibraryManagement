@@ -46,4 +46,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Проверка работоспособности
-        run: curl --fail https://librarymanagement-nx16.onrender.com/api/authors || exit 1
+        run: curl --fail https://librarymanagement-nxl6.onrender.com/api/authors || exit 1
