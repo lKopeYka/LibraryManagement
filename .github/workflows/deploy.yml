@@ -19,19 +19,8 @@ jobs:
       - name: Сборка проекта
         run: mvn clean package -DskipTests
 
-  docker-build:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Сборка Docker-образа
-        run: docker build -t my-app .
-      - name: Проверка успешности сборки
-        run: docker images
-
-
   test:
-    needs: docker-build
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,9 +33,18 @@ jobs:
       - name: Запуск тестов
         run: mvn test
 
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Сборка Docker-образа
+        run: docker build -t my-app .
+      - name: Проверка успешности сборки
+        run: docker images
 
   deploy:
-    needs: test
+    needs: docker-build
     runs-on: ubuntu-latest
     steps:
       - name: Деплой на Render
